@@ -1,0 +1,14 @@
+# Secrets — keep out of AI context entirely
+.env
+.env.*
+!.env.example
+
+# Generated / not useful for AI context
+uv.lock
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
