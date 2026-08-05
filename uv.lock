@@ -666,15 +666,6 @@ wheels = [
 ]
 
 [[package]]
-name = "graphviz"
-version = "0.21"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f8/b3/3ac91e9be6b761a4b30d66ff165e54439dcd48b83f4e20d644867215f6ca/graphviz-0.21.tar.gz", hash = "sha256:20743e7183be82aaaa8ad6c93f8893c923bd6658a04c32ee115edb3c8a835f78", size = 200434, upload-time = "2025-06-15T09:35:05.824Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/91/4c/e0ce1ef95d4000ebc1c11801f9b944fa5910ecc15b5e351865763d8657f8/graphviz-0.21-py3-none-any.whl", hash = "sha256:54f33de9f4f911d7e84e4191749cac8cc5653f815b06738c54db9a15ab8b1e42", size = 47300, upload-time = "2025-06-15T09:35:04.433Z" },
-]
-
-[[package]]
 name = "griffelib"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1388,7 +1379,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "gradio" },
-    { name = "openai-agents", extra = ["viz"] },
+    { name = "openai-agents" },
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "requests" },
@@ -1405,7 +1396,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "gradio", specifier = ">=6.20.0" },
-    { name = "openai-agents", extras = ["viz"], specifier = ">=0.19.0" },
+    { name = "openai-agents", specifier = ">=0.19.0" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
     { name = "requests", specifier = ">=2.32.0" },
@@ -1616,11 +1607,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ba/6c/8fa83cb23d2fe864b284cb45acf895d72a2f6e9827cc684dd4ef0d02d414/openai_agents-0.19.0.tar.gz", hash = "sha256:1d519d6966834e5c04160caec3a2549190e92ce50cdeb22fac5e17e67b8b98b2", size = 5620718, upload-time = "2026-07-27T22:49:26.615Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3b/3a/bac1aa3405c0f11b4334ac999e881d08fa40fad1f3b7229a1ca222ada489/openai_agents-0.19.0-py3-none-any.whl", hash = "sha256:25392cff993eca7c75b0679ec8d0111faef20c517222c0193111097d0f70db7a", size = 928463, upload-time = "2026-07-27T22:49:24.405Z" },
-]
-
-[package.optional-dependencies]
-viz = [
-    { name = "graphviz" },
 ]
 
 [[package]]

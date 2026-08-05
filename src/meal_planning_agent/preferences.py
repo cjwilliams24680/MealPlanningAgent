@@ -1,3 +1,6 @@
+from contextvars import ContextVar
+from dataclasses import dataclass, field
+
 from agents import function_tool
 from pydantic import BaseModel, Field
 
@@ -46,14 +49,36 @@ class UserPreferences(BaseModel):
     )
 
 
-saved_user_preferences = UserPreferences()
+@dataclass
+class SessionState:
+    """Mutable per-browser-session state. The ContextVar points at this object;
+    writes must mutate it (not ContextVar.set) so they're visible across the
+    asyncio task tree spawned by gather()."""
+
+    preferences: UserPreferences = field(default_factory=UserPreferences)
+
+
+_current_session: ContextVar[SessionState | None] = ContextVar(
+    "meal_planner_session", default=None
+)
+
+
+def set_current_session(state: SessionState) -> None:
+    """Call once at the start of each chat turn, in the turn's own task."""
+    _current_session.set(state)
+
+
+def _require_session() -> SessionState:
+    state = _current_session.get()
+    if state is None:
+        raise RuntimeError("No session bound; call set_current_session() first.")
+    return state
 
 
 @function_tool
 def set_user_preferences(update: UserPreferences):
     """Sets the user's saved preferences."""
-    global saved_user_preferences
-    saved_user_preferences = sanitize_user_preferences(update)
+    _require_session().preferences = sanitize_user_preferences(update)
 
 
 @function_tool
@@ -63,17 +88,15 @@ def get_user_preferences_tool() -> UserPreferences:
 
 
 def get_user_preferences() -> UserPreferences:
-    return saved_user_preferences
+    return _require_session().preferences
 
 
 def sanitize_user_preferences(raw: UserPreferences) -> UserPreferences:
-    return UserPreferences(
-        number_of_meals=clamp(raw.number_of_meals, 1, 10),
-        number_of_servings_per_meal=clamp(raw.number_of_servings_per_meal, 1, 100),
-        dietary_restrictions=raw.dietary_restrictions,
-        likes=raw.likes,
-        dislikes=raw.dislikes,
-        nutritional_goals=raw.nutritional_goals,
-        meals_to_avoid_this_time=raw.meals_to_avoid_this_time,
-        notes=raw.notes,
+    return raw.model_copy(
+        update={
+            "number_of_meals": clamp(raw.number_of_meals, 1, 10),
+            "number_of_servings_per_meal": clamp(
+                raw.number_of_servings_per_meal, 1, 100
+            ),
+        }
     )
