@@ -7,6 +7,7 @@ from agents import Runner, SQLiteSession, trace
 
 from .orchestration import orchestration_agent
 from .preferences import SessionState, set_current_session
+from .theme import BISTRO_CSS, bistro_theme
 
 MAX_SESSIONS = 100  # LRU cap on concurrently-remembered browser sessions
 
@@ -50,7 +51,7 @@ async def chat(message, history, request: gr.Request):
 def run():
     gr.ChatInterface(
         chat,
-        title="Meal Planner",
+        title="🍷 Meal Planner",
         concurrency_limit=10,  # Gradio's default of 1 serializes all users
         chatbot=gr.Chatbot(
             value=[
@@ -65,7 +66,8 @@ def run():
             show_label=False,
         ),
     ).launch(
-        theme=gr.themes.Base(),
+        theme=bistro_theme(),
+        css=BISTRO_CSS,
     )
 
 
