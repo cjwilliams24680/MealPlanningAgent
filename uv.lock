@@ -1385,12 +1385,13 @@ wheels = [
 [[package]]
 name = "meal-planning-agent"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "gradio" },
     { name = "openai-agents", extra = ["viz"] },
     { name = "pydantic" },
     { name = "python-dotenv" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -1406,6 +1407,7 @@ requires-dist = [
     { name = "openai-agents", extras = ["viz"], specifier = ">=0.19.0" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "requests", specifier = ">=2.32.0" },
 ]
 
 [package.metadata.requires-dev]
