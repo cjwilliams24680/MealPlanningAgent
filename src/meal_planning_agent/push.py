@@ -1,4 +1,5 @@
 import requests
+
 from .utils import assertKeyExists
 
 pushover_user = assertKeyExists("PUSHOVER_USER")

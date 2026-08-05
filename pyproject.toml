@@ -19,10 +19,29 @@ meal-planning-agent = "meal_planning_agent.main:run"
 requires = ["uv_build>=0.11.0,<0.12.0"]
 build-backend = "uv_build"
 
+[tool.ruff]
+target-version = "py312"
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+# The formatter wraps code at 88, but can't split long strings (prompts, Field
+# descriptions), so E501 only flags lines the formatter can't fix beyond 120.
+pycodestyle.max-line-length = 120
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort (import sorting)
+    "UP",  # pyupgrade (modern syntax)
+    "B",   # flake8-bugbear (likely bugs)
+    "SIM", # flake8-simplify
+]
+
 [dependency-groups]
 dev = [
     "ipykernel>=7.3.0",
     "jupyter>=1.1.1",
     "nest-asyncio>=1.6.0",
+    "ruff>=0.16.1",
 ]
 
