@@ -8,8 +8,8 @@ from .recipes import generate_recipes
 from .shopping_list import get_consolidated_ingredients, sort_ingredients, generate_ingredients_markdown
 
 class MealPlan(BaseModel):
-    plan_markdown: str = Field(description="The markdown formatted meal plan.")
-    shopping_list_markdown: str = Field(description="The markdown formatted shopping list.")
+    plan_markdown: str = Field(description="The markdown formatted meal plan to be shared with the user.")
+    aggregated_shopping_list_markdown: str = Field(description="The markdown formatted shopping list to be shared with the user.")
 
 @function_tool(output_type=MealPlan)
 async def generate_meal_plan(meal_pairings: list[MealPairing]) -> MealPlan:
@@ -20,10 +20,11 @@ async def generate_meal_plan(meal_pairings: list[MealPairing]) -> MealPlan:
         meal_pairings: A list of meal pairings to include in the meal plan.
     """
     meal_plan_items = await generate_recipes(meal_pairings)
-    return MealPlan(
+    meal_plan = MealPlan(
         plan_markdown = await write_meal_plan(meals = meal_plan_items), 
-        shopping_list_markdown=write_shopping_list(meals = meal_plan_items),
+        aggregated_shopping_list_markdown=write_shopping_list(meals = meal_plan_items),
     )
+    return meal_plan
 
 author_instructions = f'''
 {base_system_instructions}

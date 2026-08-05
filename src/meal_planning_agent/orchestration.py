@@ -111,11 +111,15 @@ The user has approved your provided list of meal ideas for their meal plan.
 
 Use the generate_meal_plan tool to generate a meal plan with a shopping list from the approved meals.
 
-The meal plan result has two properties: plan_markdown and shopping_list_markdown.
+The meal plan result has two properties: plan_markdown and aggregated_shopping_list_markdown.
 
-Share the plan_markdown with the user.
+The final output should be a markdown string formatted as follows:
 
-Share the shopping_list_markdown with the user.
+{plan_markdown}
+
+---
+
+{aggregated_shopping_list_markdown}
 '''
 meal_plan_writeup_agent = Agent(
     name="Replacement Meal Ideas Agent",
@@ -132,7 +136,7 @@ You should not do any of the individual steps yourself. Rely on the tools to do 
 Your job is to greet the user and coordinate with the tools to acheive the steps of the meal planning process.
 
 A typical workflow for meal planning looks like this:
-1. Review User Preferences: Review the user's current preferences with them.
+1. (Optional)Review User Preferences: Review the user's current preferences with them.
 2. (Optional) User Preferences Updates: Update the user's preferences based on their feedback.
 3. Initial Meal Pairings: Generate a list of meal pairings based on the preferences and present them to the user for feedback.
 4. (Optional) Meal Pairings Modifications: Generate new replacement meal pairings for any of the meals that the user rejects.
@@ -163,7 +167,7 @@ orchestration_agent = Agent(
         ),
         meal_plan_writeup_agent.as_tool(
             tool_name = "meal_plan_writeup_agent_tool",
-            tool_description = "Use this tool to write a complete meal plan with a shopping list based on the approved meal pairings.",
+            tool_description = "Use this tool to write a complete meal plan. The tool will return a markdown string. Send that string to the user, exactly as it is returned to you by the tool.",
             parameters = MealPlanWriteupInput,
         ),
     ],
