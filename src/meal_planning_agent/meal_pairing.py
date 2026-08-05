@@ -4,8 +4,7 @@ import random
 from .models import default_model, gemini_model
 from .utils import base_system_instructions, to_markdown_list, clamp
 from .preferences import get_user_preferences
-from .meal_brainstorming import MealPlanIdeas, PreparedDish
-
+from .meal_brainstorming import MealPlanIdeas, PreparedDish, create_meal_plan_brainstorm
 class MealPairing(BaseModel):
     entree: PreparedDish = Field(description="main entree")
     side: PreparedDish = Field(description="side")
