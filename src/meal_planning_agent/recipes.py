@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from .meal_brainstorming import PreparedDish
 from .meal_pairing import MealPairing
-from .models import default_model, grok_model, high_effort_model
+from .models import balanced_model, gemini_model, high_effort_model
 from .preferences import get_user_preferences
 from .utils import base_system_instructions
 
@@ -44,7 +44,9 @@ class Recipe(BaseModel):
     ingredients: list[Ingredient] = Field(
         description="A list of incredients for the recipe so the user can add them to shopping list."
     )
-    number_of_servings: int = Field(description="How many servings the recipe makes.")
+    number_of_servings_portions: int = Field(
+        description="How many serving portions the recipe makes."
+    )
     cooking_instructions: str = Field(
         description="A list of instructions for how to prepare and cook the entree, written in markdown."
     )
@@ -64,7 +66,7 @@ recipe_generation_system_instructions = f"""
 recipe_generation_agent = Agent(
     name="Recipe Generation Agent",
     instructions=recipe_generation_system_instructions,
-    model=default_model,
+    model=balanced_model,
     output_type=Recipe,
 )
 recipe_adjustment_agent = Agent(
@@ -76,7 +78,7 @@ recipe_adjustment_agent = Agent(
 recipe_validation_agent = Agent(
     name="Recipe Generation Agent",
     instructions=recipe_generation_system_instructions,
-    model=grok_model,
+    model=gemini_model,
     output_type=bool,
 )
 
@@ -124,16 +126,18 @@ async def generate_recipe(dish: PreparedDish) -> Recipe:
 
 
 async def adjust_for_servings_count_if_necessary(recipe: Recipe) -> Recipe:
-    target_servings = get_user_preferences().number_of_servings_per_meal
-    if recipe.number_of_servings == target_servings:
+    target_servings_portions = (
+        get_user_preferences().number_of_servings_portions_per_meal
+    )
+    if recipe.number_of_servings_portions == target_servings_portions:
         return recipe
     prompt = f"""
-    You've generated a recipe for a meal that makes {recipe.number_of_servings}.
-    However, the user has explicitly mentioned that they want to make {target_servings}.
+    You've generated a recipe for a meal that makes {recipe.number_of_servings_portions} portions.
+    However, the user has explicitly mentioned that they want to make {target_servings_portions} portions.
     That means each of the ingredient quantities need to be multiplied by a factor
-    of {target_servings / recipe.number_of_servings}
+    of {target_servings_portions / recipe.number_of_servings_portions}
 
-    Please adjust the recipe (seen below) so that it makes the correct number of servings:
+    Please adjust the recipe (seen below) so that it makes the correct number of serving portions:
     {recipe}
     """
     return (await Runner.run(recipe_adjustment_agent, prompt)).final_output

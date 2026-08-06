@@ -8,11 +8,11 @@ from .utils import clamp
 
 
 class UserPreferences(BaseModel):
-    number_of_meals: int = Field(
+    number_of_meals_per_meal_plan: int = Field(
         default=2,
         description="The number of meals that you should plan. Valid range of values is 1 to 10.",
     )
-    number_of_servings_per_meal: int = Field(
+    number_of_servings_portions_per_meal: int = Field(
         default=4,
         description="Determines how many serving portions we should make for each "
         "meal. Valid range of values is 1 to 100.",
@@ -32,10 +32,6 @@ class UserPreferences(BaseModel):
         default="",
         description="A description of the nutritional goals that the user aims to achieve with this meal plan.",
         examples=["Increase protein intake, lose weight, lower cholesterol"],
-    )
-    meals_to_avoid_this_time: list[str] = Field(
-        default_factory=list,
-        description="Specific foods that the user would prefer to avoid this plan.",
     )
     preferred_cooking_methods: list[str] = Field(
         default=["oven", "stovetop", "microwave"],
@@ -94,9 +90,11 @@ def get_user_preferences() -> UserPreferences:
 def sanitize_user_preferences(raw: UserPreferences) -> UserPreferences:
     return raw.model_copy(
         update={
-            "number_of_meals": clamp(raw.number_of_meals, 1, 10),
-            "number_of_servings_per_meal": clamp(
-                raw.number_of_servings_per_meal, 1, 100
+            "number_of_meals_per_meal_plan": clamp(
+                raw.number_of_meals_per_meal_plan, 1, 10
+            ),
+            "number_of_servings_portions_per_meal": clamp(
+                raw.number_of_servings_portions_per_meal, 1, 100
             ),
         }
     )

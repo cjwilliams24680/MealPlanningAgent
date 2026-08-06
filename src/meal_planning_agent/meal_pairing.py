@@ -123,7 +123,7 @@ async def validate_meal_choices(meals: list[MealPairing]) -> bool:
 async def generate_initial_meal_ideas_for_meal_plan() -> MealPairingsResult:
     """Generates the number of meal pairings for the user's meal plan based on the
     number stated in their preferences."""
-    number_of_meals = get_user_preferences().number_of_meals
+    number_of_meals = get_user_preferences().number_of_meals_per_meal_plan
     meal_pairings = await generate_meal_pairings(number_of_meals=number_of_meals)
     return MealPairingsResult(meal_pairings=meal_pairings)
 

@@ -9,6 +9,7 @@ from .meal_pairing import (
 from .meal_plan_writeup import generate_meal_plan
 from .models import default_model
 from .preferences import get_user_preferences_tool, set_user_preferences
+from .push import send_push_notification
 
 review_user_preferences_instructions = """
 You run a business that helps people plan their meals.
@@ -29,6 +30,12 @@ So your next step is to express the importance of getting the preferences right 
 
 Finally, ask the user to either make changes or confirm that everything looks correct
 so that you can move on to the next step (picking meal options).
+
+Your final output should look like this:
+
+{preferences markdown}
+---
+{user choice: 1. make changes or 2. proceed to generating meal options}
 """
 review_user_preferences_agent = Agent(
     name="Review User Preferences Agent",
@@ -57,6 +64,12 @@ Then, use the set_user_preferences tool to save that new modified set of prefere
 
 Finally, ask the user if they would like to make any further changes, or if they'd
 like to generate a new meal plan based on the updated preferences.
+
+Your final output should look like this:
+
+{confirmation message}
+---
+{user choice: 1. make changes or 2. proceed to generating meal options}
 """
 update_user_preferences_agent = Agent(
     name="Update User Preferences Agent",
@@ -79,6 +92,12 @@ Ask them if they approve of the meal ideas:
 * If they don't approve, you can generate replacement meal ideas for one or more of the meals.
   Make sure that the user specifies exactly which meals they want to replace.
 * If they do approve, then you can move on to writing the meal plan.
+
+Your final output should look like this:
+
+{meal ideas markdown}
+---
+{user choice: 1. make changes or 2. proceed to having you write recipes and a shopping list for the meal plan}
 """
 initial_meal_ideas_agent = Agent(
     name="Initial Meal Ideas Agent",
@@ -114,6 +133,12 @@ Ask them if they approve of the replacements:
 * If they don't approve, you can generate more replacement meal ideas for one or more of the meals.
   Make sure that the user specifies exactly which meals they want to replace.
 * If they do approve, then you can move on to writing the meal plan.
+
+Your final output should look like this:
+
+{meal ideas markdown}
+---
+{user choice: 1. make additionalchanges or 2. proceed to having you write recipes and a shopping list for the meal plan}
 """
 replacement_meal_ideas_agent = Agent(
     name="Replacement Meal Ideas Agent",
@@ -141,16 +166,42 @@ The meal plan result has two properties: plan_markdown and aggregated_shopping_l
 The final output should be a markdown string formatted as follows:
 
 {plan_markdown}
-
 ---
-
 {aggregated_shopping_list_markdown}
+---
+{thank the user for using your service and ask the user if they would like any further assistance}
 """
 meal_plan_writeup_agent = Agent(
     name="Replacement Meal Ideas Agent",
     instructions=meal_plan_writeup_instructions,
     model=default_model,
     tools=[get_user_preferences_tool, generate_meal_plan],
+)
+
+
+class FeatureRequestInput(BaseModel):
+    message: str = Field(
+        description="A message to the developer describing the feature request."
+    )
+
+
+feature_request_instructions = """
+You run a business that helps people plan their meals.
+
+The user has made a request for a feature that you do not yet support.
+
+Use the send_push_notification tool to send a message to the developer with the feature request.
+
+Your final output message should:
+1. apologize and explain that this service is still a work in progress.
+2. say that you will send a feature request note to the developer so he can improve the service.
+3. thank the user for using your service and ask if there is anything else you can help them with.
+"""
+feature_request_agent = Agent(
+    name="Feature Request Agent",
+    instructions=feature_request_instructions,
+    model=default_model,
+    tools=[send_push_notification],
 )
 
 orchestration_instructions = """
@@ -161,13 +212,20 @@ You should not do any of the individual steps yourself. Rely on the tools to do 
 Your job is to greet the user and coordinate with the tools to acheive the steps of the meal planning process.
 
 A typical workflow for meal planning looks like this:
-1. (Optional)Review User Preferences: Review the user's current preferences with them.
+1. (Optional) Review User Preferences: Review the user's current preferences with them.
 2. (Optional) User Preferences Updates: Update the user's preferences based on their feedback.
 3. Initial Meal Pairings: Generate a list of meal pairings based on the preferences
    and present them to the user for feedback.
 4. (Optional) Meal Pairings Modifications: Generate new replacement meal pairings
    for any of the meals that the user rejects.
 5. Writing the Meal Plan: Write a complete meal plan with a shopping list based on the approved meal pairings.
+
+If a user makes any requests that are outside of the scope of the meal planning process,
+you should politely decline and thank them for using your service.
+
+If a user makes any requests that are within the scope of the meal planning process,
+but you are not able to complete the request the you should use the feature_request_agent
+tool to send a feature request to the developer.
 """
 orchestration_agent = Agent(
     name="Meal Plan Orchestration Agent",
@@ -200,6 +258,14 @@ orchestration_agent = Agent(
             "return a markdown string. Send that string to the user, exactly as it is "
             "returned to you by the tool.",
             parameters=MealPlanWriteupInput,
+        ),
+        feature_request_agent.as_tool(
+            tool_name="feature_request_agent_tool",
+            tool_description="Use this tool to send a feature request to the "
+            "developer. Use this tool when the user makes a request for a feature "
+            "that you do not yet support. This tool will return a user friendly "
+            "message to display to the user.",
+            parameters=FeatureRequestInput,
         ),
     ],
 )

@@ -57,10 +57,14 @@ def run():
             value=[
                 {
                     "role": "assistant",
-                    "content": "Hello! I'm your AI Meal Planner. I can help you plan, "
-                    "shop for, and cook your meals. Would you like to review your "
-                    "eating and cooking preferences? Or should we skip ahead to "
-                    "picking out some meals?",
+                    "content": "Hello! I'm your AI Meal Planner. I am here to help "
+                    "with your meal planning needs. I can help you by:\n"
+                    "1. Tracking your eating and cooking preferences\n"
+                    "2. Generating fresh meal ideas that follow your preferences\n"
+                    "3. Writing recipes for those meal ideasthat are easy to follow and make great leftovers\n"
+                    "4. Making a shopping list that are organized for quick shopping\n\n"
+                    "Shall we start by reviewing your eating and cooking preferences? "
+                    "Or would you like to use the default preferences and begin generating meal ideas?",
                 }
             ],
             show_label=False,
