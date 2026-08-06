@@ -111,8 +111,8 @@ class ReplacementMealIdeasInput(BaseModel):
     number_of_meals_to_replace: int = Field(
         description="The number of meals that the user wants to replace."
     )
-    rejected_meals: list[str] = Field(
-        description="The names of the meals that the user rejected and wants to replace."
+    previous_meal_ideas: list[str] = Field(
+        description="The names of any meals that you have already suggested to the user."
     )
 
 
@@ -138,7 +138,7 @@ Your final output should look like this:
 
 {meal ideas markdown}
 ---
-{user choice: 1. make additionalchanges or 2. proceed to having you write recipes and a shopping list for the meal plan}
+{user choice: 1. make additional changes or 2. proceed to having you write recipes and a shopping list for the meal plan}
 """
 replacement_meal_ideas_agent = Agent(
     name="Replacement Meal Ideas Agent",

@@ -38,7 +38,7 @@ async def chat(message, history, request: gr.Request):
     session_hash = request.session_hash or str(uuid.uuid4())
     user_session = _get_or_create_session(session_hash)
     set_current_session(user_session.state)
-    with trace("Meal Planning - LLM Orchestration"):
+    with trace("Meal Planning Agent"):
         return (
             await Runner.run(
                 starting_agent=orchestration_agent,
@@ -61,8 +61,8 @@ def run():
                     "with your meal planning needs. I can help you by:\n"
                     "1. Tracking your eating and cooking preferences\n"
                     "2. Generating fresh meal ideas that follow your preferences\n"
-                    "3. Writing recipes for those meal ideasthat are easy to follow and make great leftovers\n"
-                    "4. Making a shopping list that are organized for quick shopping\n\n"
+                    "3. Writing recipes for those meals that are easy to follow and great for leftovers\n"
+                    "4. Making a shopping list that is organized for quick shopping\n\n"
                     "Shall we start by reviewing your eating and cooking preferences? "
                     "Or would you like to use the default preferences and begin generating meal ideas?",
                 }

@@ -130,17 +130,17 @@ async def generate_initial_meal_ideas_for_meal_plan() -> MealPairingsResult:
 
 @function_tool(output_type=MealPairingsResult)
 async def generate_meal_idea_replacements(
-    number_of_meals_to_replace: int, rejected_meals: list[str]
+    number_of_meals_to_replace: int, previous_meal_ideas: list[str]
 ) -> MealPairingsResult:
     """
     Generates an explicit number meal pairings. Used to replace any meal pairings that the user rejects.
 
     Args:
-        number_of_meals_to_replace: The number of meal pairings to replace.
+        previous_meal_ideas: The names of any meals that you have already suggested to the user..
         rejected_meals: The list of meal pairings that the user rejects.
     """
     meal_pairings = await generate_meal_pairings(
-        number_of_meals=number_of_meals_to_replace, meals_to_avoid=rejected_meals
+        number_of_meals=number_of_meals_to_replace, meals_to_avoid=previous_meal_ideas
     )
     return MealPairingsResult(meal_pairings=meal_pairings)
 
