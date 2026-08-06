@@ -2,7 +2,7 @@ import asyncio
 from dataclasses import dataclass
 from datetime import datetime
 
-from agents import Agent, Runner
+from agents import Agent, Runner, function_tool
 from pydantic import BaseModel, Field
 
 from .models import default_model, get_random_model
@@ -74,39 +74,94 @@ meal_brainstorming_agent = Agent(
     output_type=list[PreparedDish],
 )
 
+@function_tool(PreparedDish)
+async def generate_meal_idea_with_ingredients(
+    ingredients: list[str],
+    previous_meal_ideas: list[str],
+) -> PreparedDish:
+    """
+    Generate a meal idea that utilizes the given ingredients and avoid any meal ideas that have already been suggested to the user.
 
-async def generate_meal_ideas(prompt: str) -> list[PreparedDish]:
-    return (await Runner.run(meal_brainstorming_agent, prompt)).final_output
+    Args:
+        ingredients: A list of ingredients to use in the meal idea.
+        previous_meal_ideas: A list of meal ideas that have already been suggested to the user.
+    Returns:
+        A meal idea that utilizes the given ingredients.
+    """
+    ingredients_prompt = f"""
+    Here is the list of ingredients:
+    {ingredients}
+    """
+    dish_ideas = await generate_dish_ideas(
+        number_of_dishes=1, 
+        dish_type="foods", 
+        meals_to_avoid=previous_meal_ideas, 
+        additional_instructions=f"Use the following ingredients: {ingredients_prompt}")
 
+    # Wrapping it in a MealPlanIdeas object as a little hack so that we can reuse the filter_meal_ideas validator.
+    validated_dish_ideas = await filter_meal_ideas(MealPlanIdeas(
+        entree_ideas=dish_ideas,
+        side_ideas=[],
+    ))
 
-async def create_meal_plan_brainstorm(
-    number_of_meals: int, meals_to_avoid: list[str]
-) -> MealPlanIdeas:
-    number_of_meals = clamp(number_of_meals, 1, 10)
+    return validated_dish_ideas.entree_ideas[0]
+
+async def generate_dish_ideas(
+    number_of_dishes: int, 
+    dish_type: str, 
+    meals_to_avoid: list[str],
+    additional_instructions: str = "",
+) -> list[PreparedDish]:
+    number_of_dishes = clamp(number_of_dishes, 1, 10)
+    # Generate extra ideas to allow for more randomness and also in case we need
+    # to drop some of them during validation.
+    number_of_ideas = number_of_dishes * 5
+
     preferences = get_user_preferences()
     user_preferences_prompt = f"""
     Here is the user's preferences:
     {preferences}
     """
 
-    # Generate extra ideas to allow for more randomness and also in case we need
-    # to drop some of them during validation.
-    meal_idea_multiple = 5
+    prompt = f"Suggest {number_of_ideas} different {dish_type}. Avoid the following meals: {meals_to_avoid}. {user_preferences_prompt}. {additional_instructions}"
+    return (await Runner.run(meal_brainstorming_agent, prompt)).final_output
+
+async def create_meal_plan_brainstorm(
+    number_of_meals: int, 
+    meals_to_avoid: list[str]
+) -> MealPlanIdeas:
+    return await create_meal_plan_brainstorm(
+        number_of_entrees=number_of_meals, 
+        number_of_sides=number_of_meals, 
+        meals_to_avoid=meals_to_avoid,
+    )
+
+async def create_meal_plan_brainstorm(
+    number_of_entrees: int, 
+    number_of_sides: int, 
+    meals_to_avoid: list[str],
+    additional_instructions: str = "",
+) -> MealPlanIdeas:
     entrees, sides = await asyncio.gather(
-        generate_meal_ideas(
-            f"Suggest {number_of_meals * meal_idea_multiple} different entrees. "
-            f"Avoid the following meals: {meals_to_avoid}. {user_preferences_prompt}"
+        generate_dish_ideas(
+            number_of_dishes=number_of_entrees,
+            dish_type="entrees",
+            meals_to_avoid=meals_to_avoid,
+            additional_instructions=additional_instructions,
         ),
-        generate_meal_ideas(
-            f"Suggest {number_of_meals * meal_idea_multiple} different sides. "
-            f"Avoid the following meals: {meals_to_avoid}. {user_preferences_prompt}"
+        generate_dish_ideas(
+            number_of_dishes=number_of_sides,
+            dish_type="sides",
+            meals_to_avoid=meals_to_avoid,
+            additional_instructions=additional_instructions,
         ),
     )
-    return MealPlanIdeas(
+    meal_ideas = MealPlanIdeas(
         entree_ideas=entrees,
         side_ideas=sides,
     )
 
+    return await filter_meal_ideas(meal_ideas)
 
 meal_validation_instructions = f"""
 {base_system_instructions}

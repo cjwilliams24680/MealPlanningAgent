@@ -1,6 +1,8 @@
 from agents import Agent
 from pydantic import BaseModel, Field
 
+from .meal_brainstorming import PreparedDish, generate_meal_idea_with_ingredients
+from .single_dish_writeup import generate_writeup_for_single_dish
 from .meal_pairing import (
     MealPairing,
     generate_initial_meal_ideas_for_meal_plan,
@@ -49,8 +51,6 @@ class UserPreferencesUpdate(BaseModel):
     requested_changes: str = Field(
         description="A description of the changes that the user would like to make to their preferences."
     )
-
-
 update_user_preferences_instructions = """
 You run a business that helps people plan their meals.
 
@@ -99,7 +99,7 @@ Your final output should look like this:
 ---
 {user choice: 1. make changes or 2. proceed to having you write recipes and a shopping list for the meal plan}
 """
-initial_meal_ideas_agent = Agent(
+initial_meal_plan_ideas_agent = Agent(
     name="Initial Meal Ideas Agent",
     instructions=initial_meal_ideas_instructions,
     model=default_model,
@@ -114,8 +114,6 @@ class ReplacementMealIdeasInput(BaseModel):
     previous_meal_ideas: list[str] = Field(
         description="The names of any meals that you have already suggested to the user."
     )
-
-
 replacement_meal_ideas_instructions = """
 You run a business that helps people plan their meals.
 
@@ -152,8 +150,6 @@ class MealPlanWriteupInput(BaseModel):
     approved_meals: list[MealPairing] = Field(
         description="The meals that the user has approved for their meal plan."
     )
-
-
 meal_plan_writeup_instructions = """
 You run a business that helps people plan their meals.
 
@@ -183,8 +179,6 @@ class FeatureRequestInput(BaseModel):
     message: str = Field(
         description="A message to the developer describing the feature request."
     )
-
-
 feature_request_instructions = """
 You run a business that helps people plan their meals.
 
@@ -204,21 +198,79 @@ feature_request_agent = Agent(
     tools=[send_push_notification],
 )
 
+class MealIdeaForIngredientsInput(BaseModel):
+    ingredients: list[str] = Field(
+        description="The names of the ingredients."
+    )
+    previous_meal_ideas: list[str] = Field(
+        description="The names of any meals that you have already suggested to the user."
+    )
+meal_idea_for_ingredients_instructions = """
+You run a business that helps people plan their meals.
+
+The user has one or more extra ingredients that they want to use for cooking, but they don't know what to make.
+
+It's your job to generate a meal idea that utilizes those ingredients.
+
+Use the generate_meal_idea_with_ingredients tool to generate a new meal idea.
+Make sure to pass ingredients and previous_meal_ideas.
+
+Then present that meal idea to the user in markdown for their review.
+For your tone, be polite and don't be afraid to embellish how tasty that meal is going to be.
+
+Ask them if they approve of the meal idea:
+* If they don't approve, you can generate a new meal idea that utilizes those ingredients.
+* If they do approve, then you can move on to writing a recipe.
+
+Your final output should look like this:
+
+{meal idea markdown}
+---
+{user choice: 1. make changes or 2. proceed to having you write a recipe}
+"""
+meal_idea_for_ingredients_agent = Agent(
+    name="Meal Idea for Ingredients Agent",
+    instructions=meal_idea_for_ingredients_instructions,
+    model=default_model,
+    tools=[get_user_preferences_tool, generate_meal_idea_with_ingredients],
+)
+
+class SingleDishWriteupInput(BaseModel):
+    requested_dish: PreparedDish = Field(
+        description="The dish that the user has requested a recipe for."
+    )
+single_dish_writeup_instructions = """
+You run a business that helps people plan their meals.
+
+The user has stated one specific dish that they want to make (no pairings, no meal plan).
+
+It's your job to generate a single recipe for that dish.
+
+Use the generate_writeup_for_single_dish tool to generate a recipe and shopping list for the dish.
+
+The tool result has two properties: recipe_markdown and shopping_list_markdown.
+
+The final output should be a markdown string formatted as follows:
+
+{recipe_markdown}
+---
+{shopping_list_markdown}
+---
+{thank the user for using your service and ask the user if they would like any further assistance}
+"""
+single_dish_writeup_agent = Agent(
+    name="Single Dish Writeup Agent",
+    instructions=single_dish_writeup_instructions,
+    model=default_model,
+    tools=[get_user_preferences_tool, generate_writeup_for_single_dish],
+)
+
 orchestration_instructions = """
 You run a business that helps people plan their meals.
 You have tools that handle the individual steps of planning the meals.
 You should not do any of the individual steps yourself. Rely on the tools to do that.
 
 Your job is to greet the user and coordinate with the tools to acheive the steps of the meal planning process.
-
-A typical workflow for meal planning looks like this:
-1. (Optional) Review User Preferences: Review the user's current preferences with them.
-2. (Optional) User Preferences Updates: Update the user's preferences based on their feedback.
-3. Initial Meal Pairings: Generate a list of meal pairings based on the preferences
-   and present them to the user for feedback.
-4. (Optional) Meal Pairings Modifications: Generate new replacement meal pairings
-   for any of the meals that the user rejects.
-5. Writing the Meal Plan: Write a complete meal plan with a shopping list based on the approved meal pairings.
 
 If a user makes any requests that are outside of the scope of the meal planning process,
 you should politely decline and thank them for using your service.
@@ -241,8 +293,8 @@ orchestration_agent = Agent(
             tool_description="Use this tool to update the user's preferences when they request changes.",
             parameters=UserPreferencesUpdate,
         ),
-        initial_meal_ideas_agent.as_tool(
-            tool_name="initial_meal_ideas_agent_tool",
+        initial_meal_plan_ideas_agent.as_tool(
+            tool_name="initial_meal_plan_ideas_agent_tool",
             tool_description="Use this tool to generate a list of meal pairings based on "
             "the preferences and present them to the user for feedback.",
         ),
@@ -266,6 +318,16 @@ orchestration_agent = Agent(
             "that you do not yet support. This tool will return a user friendly "
             "message to display to the user.",
             parameters=FeatureRequestInput,
+        ),
+        meal_idea_for_ingredients_agent.as_tool(
+            tool_name="meal_idea_for_ingredients_agent_tool",
+            tool_description="Use this tool to generate a dish idea that utilizes specific ingredients.",
+            parameters=MealIdeaForIngredientsInput,
+        ),
+        single_dish_writeup_agent.as_tool(
+            tool_name="single_dish_writeup_agent_tool",
+            tool_description="This tool generates a recipe and shopping list for a single dish. Only use this tool when the user has requested a single dish. DO NOT USE THIS TOOL WHEN THE USER HAS REQUESTED A MEAL PLAN OR A PAIRING OF DISHES.",
+            parameters=SingleDishWriteupInput,
         ),
     ],
 )

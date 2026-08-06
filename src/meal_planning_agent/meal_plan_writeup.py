@@ -28,6 +28,8 @@ async def generate_meal_plan(meal_pairings: list[MealPairing]) -> MealPlan:
 
     Args:
         meal_pairings: A list of meal pairings to include in the meal plan.
+    Returns:
+        A meal plan with a shopping list.
     """
     meal_plan_items = await generate_recipes(meal_pairings)
     meal_plan = MealPlan(

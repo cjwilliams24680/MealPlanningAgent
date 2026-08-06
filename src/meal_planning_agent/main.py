@@ -60,12 +60,17 @@ def run():
                     "content": "Hello! I'm your AI Meal Planner. I am here to help "
                     "with your meal planning needs. I can help you by:\n"
                     "1. Tracking your eating and cooking preferences\n"
-                    "2. Generating fresh meal ideas that follow your preferences\n"
-                    "3. Writing recipes for those meals that are easy to follow and great for leftovers\n"
-                    "4. Making a shopping list that is organized for quick shopping\n\n"
-                    "Shall we start by reviewing your eating and cooking preferences? "
-                    "Or would you like to use the default preferences and begin generating meal ideas?",
+                    "2. Generating fresh meal ideas that conform to your preferences\n"
+                    "3. Writing recipes that are easy to follow and great for leftovers\n"
+                    "4. Turning those recipes into a shopping list that is organized for quick shopping\n\n"
+                    "Where would you like to start?",
                 }
+            ],
+            examples=[
+                "Please generate meal ideas for me.",
+                "I have chicken thighs in the fridge, please generate a meal using them.",
+                "Please write a recipe for pasta carbonara."
+                "I want to review my user preferences.",
             ],
             show_label=False,
         ),

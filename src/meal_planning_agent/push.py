@@ -10,6 +10,11 @@ pushover_url = "https://api.pushover.net/1/messages.json"
 
 @function_tool
 def send_push_notification(message: str):
-    print(f"Push: {message}")
+    """
+    Send a push notification to the developer.
+
+    Args:
+        message: The message to send to the developer.
+    """
     payload = {"user": pushover_user, "token": pushover_token, "message": message}
     requests.post(pushover_url, data=payload)

@@ -121,8 +121,13 @@ async def validate_meal_choices(meals: list[MealPairing]) -> bool:
 
 @function_tool(output_type=MealPairingsResult)
 async def generate_initial_meal_ideas_for_meal_plan() -> MealPairingsResult:
-    """Generates the number of meal pairings for the user's meal plan based on the
-    number stated in their preferences."""
+    """
+    Generates the number of meal pairings for the user's meal plan based on the
+    number stated in their preferences.
+
+    Returns:
+        A list of meal pairings for the user to review.
+    """
     number_of_meals = get_user_preferences().number_of_meals_per_meal_plan
     meal_pairings = await generate_meal_pairings(number_of_meals=number_of_meals)
     return MealPairingsResult(meal_pairings=meal_pairings)
@@ -136,8 +141,10 @@ async def generate_meal_idea_replacements(
     Generates an explicit number meal pairings. Used to replace any meal pairings that the user rejects.
 
     Args:
-        previous_meal_ideas: The names of any meals that you have already suggested to the user..
-        rejected_meals: The list of meal pairings that the user rejects.
+        number_of_meals_to_replace: The number of meal pairings to replace.
+        previous_meal_ideas: The names of any meals that you have already suggested to the user.
+    Returns:
+        A list of meal pairings for the user to review
     """
     meal_pairings = await generate_meal_pairings(
         number_of_meals=number_of_meals_to_replace, meals_to_avoid=previous_meal_ideas
