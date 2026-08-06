@@ -2,7 +2,6 @@ from agents import Agent
 from pydantic import BaseModel, Field
 
 from .meal_brainstorming import PreparedDish, generate_meal_idea_with_ingredients
-from .single_dish_writeup import generate_writeup_for_single_dish
 from .meal_pairing import (
     MealPairing,
     generate_initial_meal_ideas_for_meal_plan,
@@ -12,6 +11,7 @@ from .meal_plan_writeup import generate_meal_plan
 from .models import default_model
 from .preferences import get_user_preferences_tool, set_user_preferences
 from .push import send_push_notification
+from .single_dish_writeup import generate_writeup_for_single_dish
 
 review_user_preferences_instructions = """
 You run a business that helps people plan their meals.
@@ -51,6 +51,8 @@ class UserPreferencesUpdate(BaseModel):
     requested_changes: str = Field(
         description="A description of the changes that the user would like to make to their preferences."
     )
+
+
 update_user_preferences_instructions = """
 You run a business that helps people plan their meals.
 
@@ -114,6 +116,8 @@ class ReplacementMealIdeasInput(BaseModel):
     previous_meal_ideas: list[str] = Field(
         description="The names of any meals that you have already suggested to the user."
     )
+
+
 replacement_meal_ideas_instructions = """
 You run a business that helps people plan their meals.
 
@@ -136,7 +140,8 @@ Your final output should look like this:
 
 {meal ideas markdown}
 ---
-{user choice: 1. make additional changes or 2. proceed to having you write recipes and a shopping list for the meal plan}
+{user choice: 1. make additional changes or 2. proceed to having you write
+recipes and a shopping list for the meal plan}
 """
 replacement_meal_ideas_agent = Agent(
     name="Replacement Meal Ideas Agent",
@@ -150,6 +155,8 @@ class MealPlanWriteupInput(BaseModel):
     approved_meals: list[MealPairing] = Field(
         description="The meals that the user has approved for their meal plan."
     )
+
+
 meal_plan_writeup_instructions = """
 You run a business that helps people plan their meals.
 
@@ -179,6 +186,8 @@ class FeatureRequestInput(BaseModel):
     message: str = Field(
         description="A message to the developer describing the feature request."
     )
+
+
 feature_request_instructions = """
 You run a business that helps people plan their meals.
 
@@ -198,13 +207,14 @@ feature_request_agent = Agent(
     tools=[send_push_notification],
 )
 
+
 class MealIdeaForIngredientsInput(BaseModel):
-    ingredients: list[str] = Field(
-        description="The names of the ingredients."
-    )
+    ingredients: list[str] = Field(description="The names of the ingredients.")
     previous_meal_ideas: list[str] = Field(
         description="The names of any meals that you have already suggested to the user."
     )
+
+
 meal_idea_for_ingredients_instructions = """
 You run a business that helps people plan their meals.
 
@@ -235,10 +245,13 @@ meal_idea_for_ingredients_agent = Agent(
     tools=[get_user_preferences_tool, generate_meal_idea_with_ingredients],
 )
 
+
 class SingleDishWriteupInput(BaseModel):
     requested_dish: PreparedDish = Field(
         description="The dish that the user has requested a recipe for."
     )
+
+
 single_dish_writeup_instructions = """
 You run a business that helps people plan their meals.
 
@@ -326,7 +339,10 @@ orchestration_agent = Agent(
         ),
         single_dish_writeup_agent.as_tool(
             tool_name="single_dish_writeup_agent_tool",
-            tool_description="This tool generates a recipe and shopping list for a single dish. Only use this tool when the user has requested a single dish. DO NOT USE THIS TOOL WHEN THE USER HAS REQUESTED A MEAL PLAN OR A PAIRING OF DISHES.",
+            tool_description="This tool generates a recipe and shopping list "
+            "for a single dish. Only use this tool when the user has requested "
+            "a single dish. DO NOT USE THIS TOOL WHEN THE USER HAS REQUESTED "
+            "A MEAL PLAN OR A PAIRING OF DISHES.",
             parameters=SingleDishWriteupInput,
         ),
     ],

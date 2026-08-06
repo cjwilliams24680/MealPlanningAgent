@@ -159,7 +159,9 @@ async def generate_meal_pairings(
         meals_to_avoid = []
     number_of_meals = clamp(number_of_meals, 1, 10)
     brainstorm_results = await create_meal_plan_brainstorm(
-        number_of_meals=number_of_meals, meals_to_avoid=meals_to_avoid
+        number_of_entrees=number_of_meals,
+        number_of_sides=number_of_meals,
+        meals_to_avoid=meals_to_avoid,
     )
     return await generate_meals(
         brainstorm_results=brainstorm_results, number_of_meals=number_of_meals

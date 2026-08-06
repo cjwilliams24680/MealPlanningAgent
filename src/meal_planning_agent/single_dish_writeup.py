@@ -18,8 +18,11 @@ class SingleDishWriteup(BaseModel):
         description="The markdown formatted shopping list to be shared with the user."
     )
 
+
 @function_tool(output_type=SingleDishWriteup)
-async def generate_writeup_for_single_dish(requested_dish: PreparedDish) -> SingleDishWriteup:
+async def generate_writeup_for_single_dish(
+    requested_dish: PreparedDish,
+) -> SingleDishWriteup:
     """
     Generates a recipe and shopping list for a single dish.
 
@@ -34,6 +37,7 @@ async def generate_writeup_for_single_dish(requested_dish: PreparedDish) -> Sing
         shopping_list_markdown=write_shopping_list(recipe=recipe),
     )
     return writeup
+
 
 def write_shopping_list(recipe: Recipe) -> str:
     sorted_ingredients = sort_ingredients(recipe.ingredients)
