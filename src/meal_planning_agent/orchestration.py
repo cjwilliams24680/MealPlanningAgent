@@ -38,6 +38,7 @@ Your final output should look like this:
 {preferences markdown}
 ---
 {user choice: 1. make changes or 2. proceed to generating meal options}
+
 """
 review_user_preferences_agent = Agent(
     name="Review User Preferences Agent",
@@ -72,6 +73,7 @@ Your final output should look like this:
 {confirmation message}
 ---
 {user choice: 1. make changes or 2. proceed to generating meal options}
+
 """
 update_user_preferences_agent = Agent(
     name="Update User Preferences Agent",
@@ -100,6 +102,7 @@ Your final output should look like this:
 {meal ideas markdown}
 ---
 {user choice: 1. make changes or 2. proceed to having you write recipes and a shopping list for the meal plan}
+
 """
 initial_meal_plan_ideas_agent = Agent(
     name="Initial Meal Ideas Agent",
@@ -142,6 +145,7 @@ Your final output should look like this:
 ---
 {user choice: 1. make additional changes or 2. proceed to having you write
 recipes and a shopping list for the meal plan}
+
 """
 replacement_meal_ideas_agent = Agent(
     name="Replacement Meal Ideas Agent",
@@ -173,6 +177,7 @@ The final output should be a markdown string formatted as follows:
 {aggregated_shopping_list_markdown}
 ---
 {thank the user for using your service and ask the user if they would like any further assistance}
+
 """
 meal_plan_writeup_agent = Agent(
     name="Replacement Meal Ideas Agent",
@@ -199,6 +204,7 @@ Your final output message should:
 1. apologize and explain that this service is still a work in progress.
 2. say that you will send a feature request note to the developer so he can improve the service.
 3. thank the user for using your service and ask if there is anything else you can help them with.
+
 """
 feature_request_agent = Agent(
     name="Feature Request Agent",
@@ -237,6 +243,7 @@ Your final output should look like this:
 {meal idea markdown}
 ---
 {user choice: 1. make changes or 2. proceed to having you write a recipe}
+
 """
 meal_idea_for_ingredients_agent = Agent(
     name="Meal Idea for Ingredients Agent",
@@ -270,6 +277,7 @@ The final output should be a markdown string formatted as follows:
 {shopping_list_markdown}
 ---
 {thank the user for using your service and ask the user if they would like any further assistance}
+
 """
 single_dish_writeup_agent = Agent(
     name="Single Dish Writeup Agent",

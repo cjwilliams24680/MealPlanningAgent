@@ -47,33 +47,27 @@ async def chat(message, history, request: gr.Request):
             )
         ).final_output
 
+introduction = """
+## Hello! I'm your AI Meal Planner. I am here to help with your meal planning needs.
+### Where would you like to start?
+(Select an example or type your own message)
+"""
 
 def run():
     gr.ChatInterface(
         chat,
         title="🍷 Meal Planner",
+        description=introduction,
         concurrency_limit=10,  # Gradio's default of 1 serializes all users
         chatbot=gr.Chatbot(
-            value=[
-                {
-                    "role": "assistant",
-                    "content": "Hello! I'm your AI Meal Planner. I am here to help "
-                    "with your meal planning needs. I can help you by:\n"
-                    "1. Tracking your eating and cooking preferences\n"
-                    "2. Generating fresh meal ideas that conform to your preferences\n"
-                    "3. Writing recipes that are easy to follow and great for leftovers\n"
-                    "4. Turning those recipes into a shopping list that is organized for quick shopping\n\n"
-                    "Where would you like to start?",
-                }
-            ],
-            examples=[
-                "Please generate meal ideas for me.",
-                "I have chicken thighs in the fridge, please generate a meal using them.",
-                "Please write a recipe for pasta carbonara."
-                "I want to review my user preferences.",
-            ],
             show_label=False,
         ),
+        examples=[
+            "Please generate meal ideas for me",
+            "I have chicken thighs in the fridge, please generate a meal using them",
+            "Please write a recipe for pasta carbonara",
+            "I want to review my user preferences",
+        ],
     ).launch(
         theme=bistro_theme(),
         css=BISTRO_CSS,
