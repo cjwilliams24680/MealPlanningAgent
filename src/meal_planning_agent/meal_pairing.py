@@ -3,8 +3,8 @@ import random
 from agents import Agent, Runner, function_tool
 from pydantic import BaseModel, Field
 
-from .meal_brainstorming import MealPlanIdeas, PreparedDish, create_meal_plan_brainstorm
-from .models import default_model, gemini_model
+from .meal_brainstorm_generation import MealPlanIdeas, PreparedDish, create_meal_plan_brainstorm
+from .llm_models import default_model, gemini_model
 from .preferences import get_user_preferences
 from .utils import base_system_instructions, clamp, to_markdown_list
 
@@ -18,25 +18,22 @@ class MealPairingsResult(BaseModel):
     meal_pairings: list[MealPairing] = Field(description="The generated meal pairings.")
 
 
-pairing_system_instructions = f"""
-{base_system_instructions}
-"""
 entree_picking_agent = Agent(
     name="Entree Picking Agent",
-    instructions=pairing_system_instructions,
+    instructions=base_system_instructions,
     model=default_model,
     output_type=list[PreparedDish],
 )
 pairing_agent = Agent(
     name="Meal Pairing Agent",
-    instructions=pairing_system_instructions,
+    instructions=base_system_instructions,
     model=default_model,
     output_type=list[MealPairing],
 )
 
 meal_choice_validation_agent = Agent(
     name="Meal Choice Validation Agent",
-    instructions=pairing_system_instructions,
+    instructions=base_system_instructions,
     model=gemini_model,
     output_type=bool,
 )
@@ -119,6 +116,21 @@ async def validate_meal_choices(meals: list[MealPairing]) -> bool:
     return (await Runner.run(meal_choice_validation_agent, prompt)).final_output
 
 
+async def generate_meal_pairings(
+    number_of_meals: int, meals_to_avoid: list[str] | None = None
+) -> list[MealPairing]:
+    if meals_to_avoid is None:
+        meals_to_avoid = []
+    number_of_meals = clamp(number_of_meals, 1, 10)
+    brainstorm_results = await create_meal_plan_brainstorm(
+        number_of_entrees=number_of_meals,
+        number_of_sides=number_of_meals,
+        meals_to_avoid=meals_to_avoid,
+    )
+    return await generate_meals(
+        brainstorm_results=brainstorm_results, number_of_meals=number_of_meals
+    )
+
 @function_tool(output_type=MealPairingsResult)
 async def generate_initial_meal_ideas_for_meal_plan() -> MealPairingsResult:
     """
@@ -150,19 +162,3 @@ async def generate_meal_idea_replacements(
         number_of_meals=number_of_meals_to_replace, meals_to_avoid=previous_meal_ideas
     )
     return MealPairingsResult(meal_pairings=meal_pairings)
-
-
-async def generate_meal_pairings(
-    number_of_meals: int, meals_to_avoid: list[str] | None = None
-) -> list[MealPairing]:
-    if meals_to_avoid is None:
-        meals_to_avoid = []
-    number_of_meals = clamp(number_of_meals, 1, 10)
-    brainstorm_results = await create_meal_plan_brainstorm(
-        number_of_entrees=number_of_meals,
-        number_of_sides=number_of_meals,
-        meals_to_avoid=meals_to_avoid,
-    )
-    return await generate_meals(
-        brainstorm_results=brainstorm_results, number_of_meals=number_of_meals
-    )

@@ -5,6 +5,7 @@ You are a meal planning assistant who helps people plan their meals for the week
 You are an expert on simple meals that require minimal amounts of preparation, reheat well, and are delicious.
 """
 
+section_break = "\n\n\n========================================================================================\n\n\n"
 
 def assertKeyExists(key: str) -> str:
     value = os.getenv(key)
@@ -28,9 +29,6 @@ def filter_out_invalid_strings(
 
 def clamp(n, min_n, max_n):
     return max(min_n, min(n, max_n))
-
-
-section_break = "\n\n\n========================================================================================\n\n\n"
 
 
 def print_break():

@@ -1,36 +1,11 @@
 import uuid
-from collections import OrderedDict
-from dataclasses import dataclass, field
 
 import gradio as gr
-from agents import Runner, SQLiteSession, trace
+from agents import Runner, trace
 
 from .orchestration import orchestration_agent
-from .preferences import SessionState, set_current_session
+from .auth import _get_or_create_session, set_current_session
 from .theme import BISTRO_CSS, bistro_theme
-
-MAX_SESSIONS = 100  # LRU cap on concurrently-remembered browser sessions
-
-
-@dataclass
-class UserSession:
-    state: SessionState = field(default_factory=SessionState)
-    history: SQLiteSession | None = None
-
-
-_sessions: OrderedDict[str, UserSession] = OrderedDict()
-
-
-def _get_or_create_session(session_hash: str) -> UserSession:
-    existing = _sessions.get(session_hash)
-    if existing is not None:
-        _sessions.move_to_end(session_hash)
-        return existing
-    user_session = UserSession(history=SQLiteSession(session_id=session_hash))
-    _sessions[session_hash] = user_session
-    while len(_sessions) > MAX_SESSIONS:
-        _sessions.popitem(last=False)
-    return user_session
 
 
 async def chat(message, history, request: gr.Request):
@@ -48,13 +23,13 @@ async def chat(message, history, request: gr.Request):
             )
         ).final_output
 
-introduction = """
-## Hello! I'm your AI Meal Planner. I am here to help with your meal planning needs.
-### Where would you like to start?
-(Select an example or type your own message)
-"""
-
 def run():
+    introduction = """
+    ## Hello! I'm your AI Meal Planner. I am here to help with your meal planning needs.
+    ### Where would you like to start?
+    (Select an example or type your own message)
+    """
+
     gr.ChatInterface(
         chat,
         title="🍷 Meal Planner",

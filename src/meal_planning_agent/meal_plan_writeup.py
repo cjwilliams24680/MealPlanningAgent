@@ -2,15 +2,14 @@ from agents import Agent, Runner, function_tool
 from pydantic import BaseModel, Field
 
 from .meal_pairing import MealPairing
-from .models import default_model
-from .recipes import MealPlanItem, generate_recipes
+from .llm_models import default_model
+from .recipe_generation import MealPlanItem, generate_recipes
 from .shopping_list import (
     generate_ingredients_markdown,
     get_consolidated_ingredients,
     sort_ingredients,
 )
 from .utils import base_system_instructions
-
 
 class MealPlan(BaseModel):
     plan_markdown: str = Field(
@@ -20,30 +19,8 @@ class MealPlan(BaseModel):
         description="The markdown formatted shopping list to be shared with the user."
     )
 
-
-@function_tool(output_type=MealPlan)
-async def generate_meal_plan(meal_pairings: list[MealPairing]) -> MealPlan:
-    """
-    Generates a meal plan with a shopping list from a list of meal pairings.
-
-    Args:
-        meal_pairings: A list of meal pairings to include in the meal plan.
-    Returns:
-        A meal plan with a shopping list.
-    """
-    meal_plan_items = await generate_recipes(meal_pairings)
-    meal_plan = MealPlan(
-        plan_markdown=await write_meal_plan(meals=meal_plan_items),
-        aggregated_shopping_list_markdown=write_shopping_list(meals=meal_plan_items),
-    )
-    return meal_plan
-
-
-author_instructions = f"""
-{base_system_instructions}
-"""
 author_agent = Agent(
-    name="Meal Plan Author", model=default_model, instructions=author_instructions
+    name="Meal Plan Author", model=default_model, instructions=base_system_instructions
 )
 
 
@@ -65,3 +42,20 @@ def write_shopping_list(meals: list[MealPlanItem]) -> str:
     ingredients = get_consolidated_ingredients(meal_plan=meals)
     sorted_ingredients = sort_ingredients(ingredients)
     return generate_ingredients_markdown(sorted_ingredients)
+
+@function_tool(output_type=MealPlan)
+async def generate_meal_plan(meal_pairings: list[MealPairing]) -> MealPlan:
+    """
+    Generates a meal plan with a shopping list from a list of meal pairings.
+
+    Args:
+        meal_pairings: A list of meal pairings to include in the meal plan.
+    Returns:
+        A meal plan with a shopping list.
+    """
+    meal_plan_items = await generate_recipes(meal_pairings)
+    meal_plan = MealPlan(
+        plan_markdown=await write_meal_plan(meals=meal_plan_items),
+        aggregated_shopping_list_markdown=write_shopping_list(meals=meal_plan_items),
+    )
+    return meal_plan

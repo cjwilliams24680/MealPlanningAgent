@@ -1,9 +1,9 @@
-from contextvars import ContextVar
 from dataclasses import dataclass, field
 
 from agents import function_tool
 from pydantic import BaseModel, Field
 
+from .auth import _require_session
 from .utils import clamp
 
 
@@ -54,33 +54,7 @@ class SessionState:
     preferences: UserPreferences = field(default_factory=UserPreferences)
 
 
-_current_session: ContextVar[SessionState | None] = ContextVar(
-    "meal_planner_session", default=None
-)
 
-
-def set_current_session(state: SessionState) -> None:
-    """Call once at the start of each chat turn, in the turn's own task."""
-    _current_session.set(state)
-
-
-def _require_session() -> SessionState:
-    state = _current_session.get()
-    if state is None:
-        raise RuntimeError("No session bound; call set_current_session() first.")
-    return state
-
-
-@function_tool
-def set_user_preferences(update: UserPreferences):
-    """Sets the user's saved preferences."""
-    _require_session().preferences = sanitize_user_preferences(update)
-
-
-@function_tool
-def get_user_preferences_tool() -> UserPreferences:
-    """Returns the user's saved preferences."""
-    return get_user_preferences()
 
 
 def get_user_preferences() -> UserPreferences:
@@ -98,3 +72,14 @@ def sanitize_user_preferences(raw: UserPreferences) -> UserPreferences:
             ),
         }
     )
+
+@function_tool
+def set_user_preferences(update: UserPreferences):
+    """Sets the user's saved preferences."""
+    _require_session().preferences = sanitize_user_preferences(update)
+
+
+@function_tool
+def get_user_preferences_tool() -> UserPreferences:
+    """Returns the user's saved preferences."""
+    return get_user_preferences()

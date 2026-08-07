@@ -4,9 +4,10 @@ from dataclasses import dataclass
 from agents import Agent, Runner
 from pydantic import BaseModel, Field
 
-from .meal_brainstorming import PreparedDish
+from .meal_brainstorm_generation import PreparedDish
 from .meal_pairing import MealPairing
-from .models import balanced_model, gemini_model, high_effort_model
+from .llm_models import balanced_model
+from .recipe_validation import adjust_for_servings_count_if_necessary, validate_recipe
 from .preferences import get_user_preferences
 from .utils import base_system_instructions
 
@@ -21,7 +22,6 @@ grocery_departments = [
     "Pharmacy",
     "Other",
 ]
-
 
 class Ingredient(BaseModel):
     name: str = Field(
@@ -51,7 +51,6 @@ class Recipe(BaseModel):
         description="A list of instructions for how to prepare and cook the entree, written in markdown."
     )
 
-
 @dataclass
 class MealPlanItem:
     entree: PreparedDish
@@ -59,29 +58,12 @@ class MealPlanItem:
     side: PreparedDish
     side_recipe: Recipe
 
-
-recipe_generation_system_instructions = f"""
-{base_system_instructions}
-"""
 recipe_generation_agent = Agent(
     name="Recipe Generation Agent",
-    instructions=recipe_generation_system_instructions,
+    instructions=base_system_instructions,
     model=balanced_model,
     output_type=Recipe,
 )
-recipe_adjustment_agent = Agent(
-    name="Recipe Generation Agent",
-    instructions=recipe_generation_system_instructions,
-    model=high_effort_model,
-    output_type=Recipe,
-)
-recipe_validation_agent = Agent(
-    name="Recipe Generation Agent",
-    instructions=recipe_generation_system_instructions,
-    model=gemini_model,
-    output_type=bool,
-)
-
 
 async def generate_recipes(meals: list[MealPairing]) -> list[MealPlanItem]:
     tasks = [generate_recipes_for_meal(item) for item in meals]
@@ -123,35 +105,3 @@ async def generate_recipe(dish: PreparedDish) -> Recipe:
         passes_validation = await validate_recipe(dish, recipe)
         if passes_validation or attempts > 3:
             return recipe
-
-
-async def adjust_for_servings_count_if_necessary(recipe: Recipe) -> Recipe:
-    target_servings_portions = (
-        get_user_preferences().number_of_servings_portions_per_meal
-    )
-    if recipe.number_of_servings_portions == target_servings_portions:
-        return recipe
-    prompt = f"""
-    You've generated a recipe for a meal that makes {recipe.number_of_servings_portions} portions.
-    However, the user has explicitly mentioned that they want to make {target_servings_portions} portions.
-    That means each of the ingredient quantities need to be multiplied by a factor
-    of {target_servings_portions / recipe.number_of_servings_portions}
-
-    Please adjust the recipe (seen below) so that it makes the correct number of serving portions:
-    {recipe}
-    """
-    return (await Runner.run(recipe_adjustment_agent, prompt)).final_output
-
-
-async def validate_recipe(dish: PreparedDish, recipe: Recipe) -> bool:
-    prompt = f"""
-    You're writing a meal plan for the user and they've selected the following dish:
-    {dish.name}
-
-    You've written the following recipe for that dish:
-    {recipe}
-
-    Return true if the recipe is simple and conforms to the user's preferences:
-    {get_user_preferences()}
-    """
-    return (await Runner.run(recipe_validation_agent, prompt)).final_output
