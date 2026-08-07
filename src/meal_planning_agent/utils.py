@@ -7,6 +7,7 @@ You are an expert on simple meals that require minimal amounts of preparation, r
 
 section_break = "\n\n\n========================================================================================\n\n\n"
 
+
 def assertKeyExists(key: str) -> str:
     value = os.getenv(key)
     if value:

@@ -1,33 +1,13 @@
 import asyncio
-from dataclasses import dataclass
 
 from agents import Agent, Runner, function_tool
-from pydantic import BaseModel, Field
 
 from .llm_models import get_random_model
-from .preferences import get_user_preferences
-from .utils import base_system_instructions, clamp
-from .seasonal_report import get_seasonal_report
 from .meal_brainstorm_validation import filter_meal_ideas
-
-class PreparedDish(BaseModel):
-    name: str = Field(description="The short name of a dish.")
-    description: str = Field(description="A 1-2 sentence description of the dish.")
-    special_diet_labels: list[str] = Field(
-        description="A list of any dietary restrictions that this meal satisfies",
-        examples=["vegetarian", "gluten-free"],
-    )
-    cuisine: list[str] = Field(
-        description="The category of food, usually tied to a country or region.",
-        examples=["Italian", "Chinese", "Southern Comfort"],
-    )
-
-
-@dataclass
-class MealPlanIdeas:
-    entree_ideas: list[PreparedDish]
-    side_ideas: list[PreparedDish]
-
+from .meal_models import MealPlanIdeas, PreparedDish
+from .preferences import get_user_preferences
+from .seasonal_report import get_seasonal_report
+from .utils import base_system_instructions, clamp
 
 brainstorm_instructions = f"""
 {base_system_instructions}
@@ -95,6 +75,7 @@ async def create_meal_plan_brainstorm(
     )
 
     return await filter_meal_ideas(meal_ideas)
+
 
 @function_tool(output_type=PreparedDish)
 async def generate_meal_idea_with_ingredients(

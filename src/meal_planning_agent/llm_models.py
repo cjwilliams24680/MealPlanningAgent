@@ -24,6 +24,7 @@ grok_client = AsyncOpenAI(
 )
 grok_model = OpenAIChatCompletionsModel(model="grok-4.5", openai_client=grok_client)
 
+
 # Randomly returns a model so that the behavior is more variable
 def get_random_model():
     models = [default_model, gemini_model, grok_model]

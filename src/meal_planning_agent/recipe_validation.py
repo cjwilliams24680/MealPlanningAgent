@@ -1,9 +1,9 @@
 from agents import Agent, Runner
 
-from .meal_brainstorm_generation import PreparedDish
-from .recipe_generation import Recipe
 from .llm_models import gemini_model, high_effort_model
+from .meal_models import PreparedDish
 from .preferences import get_user_preferences
+from .recipe_models import Recipe
 from .utils import base_system_instructions
 
 recipe_adjustment_agent = Agent(

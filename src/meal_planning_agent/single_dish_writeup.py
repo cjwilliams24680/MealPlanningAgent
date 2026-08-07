@@ -1,10 +1,11 @@
 from agents import function_tool
 from pydantic import BaseModel, Field
 
-from .meal_brainstorm_generation import PreparedDish
-
-from .recipe_generation import Recipe, generate_recipe
+from .meal_models import PreparedDish
+from .recipe_generation import generate_recipe
+from .recipe_models import Recipe
 from .shopping_list import generate_ingredients_markdown, sort_ingredients
+
 
 class SingleDishWriteup(BaseModel):
     recipe_markdown: str = Field(
@@ -14,9 +15,11 @@ class SingleDishWriteup(BaseModel):
         description="The markdown formatted shopping list to be shared with the user."
     )
 
+
 def write_shopping_list(recipe: Recipe) -> str:
     sorted_ingredients = sort_ingredients(recipe.ingredients)
     return generate_ingredients_markdown(sorted_ingredients)
+
 
 @function_tool(output_type=SingleDishWriteup)
 async def generate_writeup_for_single_dish(

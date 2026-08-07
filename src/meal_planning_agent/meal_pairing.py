@@ -3,8 +3,9 @@ import random
 from agents import Agent, Runner, function_tool
 from pydantic import BaseModel, Field
 
-from .meal_brainstorm_generation import MealPlanIdeas, PreparedDish, create_meal_plan_brainstorm
 from .llm_models import default_model, gemini_model
+from .meal_brainstorm_generation import create_meal_plan_brainstorm
+from .meal_models import MealPlanIdeas, PreparedDish
 from .preferences import get_user_preferences
 from .utils import base_system_instructions, clamp, to_markdown_list
 
@@ -130,6 +131,7 @@ async def generate_meal_pairings(
     return await generate_meals(
         brainstorm_results=brainstorm_results, number_of_meals=number_of_meals
     )
+
 
 @function_tool(output_type=MealPairingsResult)
 async def generate_initial_meal_ideas_for_meal_plan() -> MealPairingsResult:

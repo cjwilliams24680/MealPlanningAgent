@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 # Used to make the meals weather-appropriate and add a little bit of differentiation to the prompt week-to-week.
 def get_seasonal_report():
     now = datetime.now()

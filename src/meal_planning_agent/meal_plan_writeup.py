@@ -1,15 +1,17 @@
 from agents import Agent, Runner, function_tool
 from pydantic import BaseModel, Field
 
-from .meal_pairing import MealPairing
 from .llm_models import default_model
-from .recipe_generation import MealPlanItem, generate_recipes
+from .meal_pairing import MealPairing
+from .recipe_generation import generate_recipes
+from .recipe_models import MealPlanItem
 from .shopping_list import (
     generate_ingredients_markdown,
     get_consolidated_ingredients,
     sort_ingredients,
 )
 from .utils import base_system_instructions
+
 
 class MealPlan(BaseModel):
     plan_markdown: str = Field(
@@ -18,6 +20,7 @@ class MealPlan(BaseModel):
     aggregated_shopping_list_markdown: str = Field(
         description="The markdown formatted shopping list to be shared with the user."
     )
+
 
 author_agent = Agent(
     name="Meal Plan Author", model=default_model, instructions=base_system_instructions
@@ -42,6 +45,7 @@ def write_shopping_list(meals: list[MealPlanItem]) -> str:
     ingredients = get_consolidated_ingredients(meal_plan=meals)
     sorted_ingredients = sort_ingredients(ingredients)
     return generate_ingredients_markdown(sorted_ingredients)
+
 
 @function_tool(output_type=MealPlan)
 async def generate_meal_plan(meal_pairings: list[MealPairing]) -> MealPlan:

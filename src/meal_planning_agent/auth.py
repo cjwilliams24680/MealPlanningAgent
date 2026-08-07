@@ -1,16 +1,18 @@
-from contextvars import ContextVar
 from collections import OrderedDict
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 
 from agents import SQLiteSession
 
-from .preferences import SessionState
+from .preference_models import SessionState
 
 """
-This is kind of a hack thrown together by Claude to allow for multiple sessions until I get around to implementing a proper session management system.
+This is kind of a hack thrown together by Claude to allow for multiple sessions
+until I get around to implementing a proper session management system.
 """
 
 MAX_SESSIONS = 100  # LRU cap on concurrently-remembered browser sessions
+
 
 @dataclass
 class UserSession:
@@ -24,6 +26,7 @@ _current_session: ContextVar[SessionState | None] = ContextVar(
     "meal_planner_session", default=None
 )
 
+
 def _get_or_create_session(session_hash: str) -> UserSession:
     existing = _sessions.get(session_hash)
     if existing is not None:
@@ -34,6 +37,7 @@ def _get_or_create_session(session_hash: str) -> UserSession:
     while len(_sessions) > MAX_SESSIONS:
         _sessions.popitem(last=False)
     return user_session
+
 
 def set_current_session(state: SessionState) -> None:
     """Call once at the start of each chat turn, in the turn's own task."""

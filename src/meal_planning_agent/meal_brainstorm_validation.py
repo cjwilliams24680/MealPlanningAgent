@@ -1,10 +1,9 @@
-
 from agents import Agent, Runner
 
 from .llm_models import default_model
+from .meal_models import MealPlanIdeas, PreparedDish
 from .preferences import get_user_preferences
 from .utils import base_system_instructions, to_markdown_list
-from .meal_brainstorm_generation import PreparedDish, MealPlanIdeas, filter_out_flagged_dishes
 
 meal_validation_instructions = f"""
 {base_system_instructions}
@@ -25,6 +24,7 @@ def filter_out_flagged_dishes(
     dishes: list[PreparedDish], flagged_names: set[str]
 ) -> list[PreparedDish]:
     return [dish for dish in dishes if dish.name not in flagged_names]
+
 
 async def filter_meal_ideas(meal_ideas: MealPlanIdeas) -> MealPlanIdeas:
     all_dishes = meal_ideas.entree_ideas + meal_ideas.side_ideas

@@ -3,8 +3,8 @@ import uuid
 import gradio as gr
 from agents import Runner, trace
 
-from .orchestration import orchestration_agent
 from .auth import _get_or_create_session, set_current_session
+from .orchestration import orchestration_agent
 from .theme import BISTRO_CSS, bistro_theme
 
 
@@ -22,6 +22,7 @@ async def chat(message, history, request: gr.Request):
                 session=user_session.history,
             )
         ).final_output
+
 
 def run():
     introduction = """
