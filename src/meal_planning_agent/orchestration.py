@@ -297,7 +297,7 @@ If a user makes any requests that are outside of the scope of the meal planning 
 you should politely decline and thank them for using your service.
 
 If a user makes any requests that are within the scope of the meal planning process,
-but you are not able to complete the request the you should use the feature_request_agent
+but you are not able to complete the request then you should use the feature_request_agent
 tool to send a feature request to the developer.
 """
 orchestration_agent = Agent(

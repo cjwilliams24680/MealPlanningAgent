@@ -29,11 +29,11 @@ async def generate_writeup_for_single_dish(
     Args:
         requested_dish: The dish that the user has requested a recipe for.
     Returns:
-        A recipe and shopping list for the single dish.
+        A SingleDishWriteup object containing the recipe_markdown and shopping_list_markdown for the requested dish.
     """
     recipe = await generate_recipe(requested_dish)
     writeup = SingleDishWriteup(
-        recipe_markdown=recipe,
+        recipe_markdown=recipe.cooking_instructions,
         shopping_list_markdown=write_shopping_list(recipe=recipe),
     )
     return writeup
