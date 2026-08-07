@@ -34,8 +34,9 @@ def _get_or_create_session(session_hash: str) -> UserSession:
 
 
 async def chat(message, history, request: gr.Request):
-    # session_hash is None for direct API calls; give those an isolated session
-    session_hash = request.session_hash or str(uuid.uuid4())
+    # request/session_hash is None for direct API calls and example caching;
+    # give those an isolated session
+    session_hash = (request and request.session_hash) or str(uuid.uuid4())
     user_session = _get_or_create_session(session_hash)
     set_current_session(user_session.state)
     with trace("Meal Planning Agent"):
@@ -68,6 +69,9 @@ def run():
             "Please write a recipe for pasta carbonara",
             "I want to review my user preferences",
         ],
+        # Spaces sets GRADIO_CACHE_EXAMPLES=true, which would run the full
+        # agent pipeline per example at every build
+        cache_examples=False,
     ).launch(
         theme=bistro_theme(),
         css=BISTRO_CSS,
