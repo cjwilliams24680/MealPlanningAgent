@@ -10,7 +10,7 @@ from .recipe_models import MealPlanItem, Recipe
 from .recipe_validation import adjust_for_servings_count_if_necessary, validate_recipe
 from .utils import BASE_SYSTEM_INSTRUCTIONS
 
-recipe_generation_agent = Agent(
+_RECIPE_GENERATION_AGENT = Agent(
     name="Recipe Generation Agent",
     instructions=BASE_SYSTEM_INSTRUCTIONS,
     model=BALANCED_MODEL,
@@ -53,7 +53,7 @@ The recipe should use less than 10 ingredients and preparation time under 20 min
     attempts = 0
     while True:
         attempts += 1
-        recipe = (await Runner.run(recipe_generation_agent, prompt)).final_output
+        recipe = (await Runner.run(_RECIPE_GENERATION_AGENT, prompt)).final_output
         recipe = await adjust_for_servings_count_if_necessary(recipe)
         passes_validation = await validate_recipe(dish, recipe)
         if passes_validation or attempts > 3:

@@ -1,21 +1,21 @@
 from agents import Agent, Runner
 
-from .llm_models import HIGH_EFFORT_MODEL, gemini_model
+from .llm_models import GEMINI_MODEL, HIGH_EFFORT_MODEL
 from .meal_models import PreparedDish
 from .preferences import get_user_preferences
 from .recipe_models import Recipe
 from .utils import BASE_SYSTEM_INSTRUCTIONS
 
-recipe_adjustment_agent = Agent(
-    name="Recipe Generation Agent",
+_RECIPE_ADJUSTMENT_AGENT = Agent(
+    name="Recipe Adjustment Agent",
     instructions=BASE_SYSTEM_INSTRUCTIONS,
     model=HIGH_EFFORT_MODEL,
     output_type=Recipe,
 )
-recipe_validation_agent = Agent(
-    name="Recipe Generation Agent",
+_RECIPE_VALIDATION_AGENT = Agent(
+    name="Recipe Validation Agent",
     instructions=BASE_SYSTEM_INSTRUCTIONS,
-    model=gemini_model,
+    model=GEMINI_MODEL,
     output_type=bool,
 )
 
@@ -35,7 +35,7 @@ of {target_servings_portions / recipe.number_of_servings_portions}
 Please adjust the recipe (seen below) so that it makes the correct number of serving portions:
 {recipe}
 """
-    return (await Runner.run(recipe_adjustment_agent, prompt)).final_output
+    return (await Runner.run(_RECIPE_ADJUSTMENT_AGENT, prompt)).final_output
 
 
 async def validate_recipe(dish: PreparedDish, recipe: Recipe) -> bool:
@@ -49,4 +49,4 @@ You've written the following recipe for that dish:
 Return true if the recipe is simple and conforms to the user's preferences:
 {get_user_preferences()}
 """
-    return (await Runner.run(recipe_validation_agent, prompt)).final_output
+    return (await Runner.run(_RECIPE_VALIDATION_AGENT, prompt)).final_output

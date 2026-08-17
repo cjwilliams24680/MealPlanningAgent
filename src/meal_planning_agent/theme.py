@@ -2,16 +2,15 @@
 
 import gradio as gr
 
-CHARCOAL = "#2B2B28"
-CHARCOAL_LIGHT = "#35342F"
-CHARCOAL_LIGHTER = "#403E38"
-CHALK = "#F2EEE3"
-CHALK_SUBDUED = "#B8B3A4"
-AMBER = "#E8B44F"
-AMBER_BRIGHT = "#F0C46A"
-AMBER_SOFT = "rgba(232, 180, 79, 0.15)"
-AMBER_FAINT = "rgba(232, 180, 79, 0.07)"
-WARM_GRAY_BORDER = "#4A4840"
+_CHARCOAL = "#2B2B28"
+_CHARCOAL_LIGHT = "#35342F"
+_CHARCOAL_LIGHTER = "#403E38"
+_CHALK = "#F2EEE3"
+_CHALK_SUBDUED = "#B8B3A4"
+_AMBER = "#E8B44F"
+_AMBER_BRIGHT = "#F0C46A"
+_AMBER_SOFT = "rgba(232, 180, 79, 0.15)"
+_WARM_GRAY_BORDER = "#4A4840"
 
 
 def bistro_theme() -> gr.themes.Base:
@@ -34,63 +33,63 @@ def bistro_theme() -> gr.themes.Base:
     # Light and _dark variants are pinned to the same values so the chalkboard
     # look holds regardless of the visitor's browser color-scheme preference.
     return theme.set(
-        body_background_fill=CHARCOAL,
-        body_background_fill_dark=CHARCOAL,
-        body_text_color=CHALK,
-        body_text_color_dark=CHALK,
-        body_text_color_subdued=CHALK_SUBDUED,
-        body_text_color_subdued_dark=CHALK_SUBDUED,
-        background_fill_primary=CHARCOAL,
-        background_fill_primary_dark=CHARCOAL,
-        background_fill_secondary=CHARCOAL_LIGHT,
-        background_fill_secondary_dark=CHARCOAL_LIGHT,
-        block_background_fill=CHARCOAL_LIGHT,
-        block_background_fill_dark=CHARCOAL_LIGHT,
-        block_border_color=WARM_GRAY_BORDER,
-        block_border_color_dark=WARM_GRAY_BORDER,
-        block_label_text_color=CHALK_SUBDUED,
-        block_label_text_color_dark=CHALK_SUBDUED,
-        block_label_background_fill=CHARCOAL_LIGHT,
-        block_label_background_fill_dark=CHARCOAL_LIGHT,
-        block_title_text_color=CHALK,
-        block_title_text_color_dark=CHALK,
-        panel_background_fill=CHARCOAL_LIGHT,
-        panel_background_fill_dark=CHARCOAL_LIGHT,
-        panel_border_color=WARM_GRAY_BORDER,
-        panel_border_color_dark=WARM_GRAY_BORDER,
-        input_background_fill=CHARCOAL_LIGHT,
-        input_background_fill_dark=CHARCOAL_LIGHT,
-        input_background_fill_focus=CHARCOAL_LIGHTER,
-        input_background_fill_focus_dark=CHARCOAL_LIGHTER,
-        input_border_color=WARM_GRAY_BORDER,
-        input_border_color_dark=WARM_GRAY_BORDER,
-        input_border_color_focus=AMBER,
-        input_border_color_focus_dark=AMBER,
-        input_placeholder_color=CHALK_SUBDUED,
-        input_placeholder_color_dark=CHALK_SUBDUED,
-        border_color_primary=WARM_GRAY_BORDER,
-        border_color_primary_dark=WARM_GRAY_BORDER,
-        border_color_accent=AMBER,
-        border_color_accent_dark=AMBER,
-        color_accent=AMBER,
-        color_accent_soft=AMBER_SOFT,
-        color_accent_soft_dark=AMBER_SOFT,
-        button_primary_background_fill=AMBER,
-        button_primary_background_fill_dark=AMBER,
-        button_primary_background_fill_hover=AMBER_BRIGHT,
-        button_primary_background_fill_hover_dark=AMBER_BRIGHT,
-        button_primary_text_color=CHARCOAL,
-        button_primary_text_color_dark=CHARCOAL,
-        button_secondary_background_fill=CHARCOAL_LIGHTER,
-        button_secondary_background_fill_dark=CHARCOAL_LIGHTER,
-        button_secondary_background_fill_hover=WARM_GRAY_BORDER,
-        button_secondary_background_fill_hover_dark=WARM_GRAY_BORDER,
-        button_secondary_text_color=CHALK,
-        button_secondary_text_color_dark=CHALK,
-        link_text_color=AMBER,
-        link_text_color_dark=AMBER,
-        link_text_color_hover=AMBER_BRIGHT,
-        link_text_color_hover_dark=AMBER_BRIGHT,
+        body_background_fill=_CHARCOAL,
+        body_background_fill_dark=_CHARCOAL,
+        body_text_color=_CHALK,
+        body_text_color_dark=_CHALK,
+        body_text_color_subdued=_CHALK_SUBDUED,
+        body_text_color_subdued_dark=_CHALK_SUBDUED,
+        background_fill_primary=_CHARCOAL,
+        background_fill_primary_dark=_CHARCOAL,
+        background_fill_secondary=_CHARCOAL_LIGHT,
+        background_fill_secondary_dark=_CHARCOAL_LIGHT,
+        block_background_fill=_CHARCOAL_LIGHT,
+        block_background_fill_dark=_CHARCOAL_LIGHT,
+        block_border_color=_WARM_GRAY_BORDER,
+        block_border_color_dark=_WARM_GRAY_BORDER,
+        block_label_text_color=_CHALK_SUBDUED,
+        block_label_text_color_dark=_CHALK_SUBDUED,
+        block_label_background_fill=_CHARCOAL_LIGHT,
+        block_label_background_fill_dark=_CHARCOAL_LIGHT,
+        block_title_text_color=_CHALK,
+        block_title_text_color_dark=_CHALK,
+        panel_background_fill=_CHARCOAL_LIGHT,
+        panel_background_fill_dark=_CHARCOAL_LIGHT,
+        panel_border_color=_WARM_GRAY_BORDER,
+        panel_border_color_dark=_WARM_GRAY_BORDER,
+        input_background_fill=_CHARCOAL_LIGHT,
+        input_background_fill_dark=_CHARCOAL_LIGHT,
+        input_background_fill_focus=_CHARCOAL_LIGHTER,
+        input_background_fill_focus_dark=_CHARCOAL_LIGHTER,
+        input_border_color=_WARM_GRAY_BORDER,
+        input_border_color_dark=_WARM_GRAY_BORDER,
+        input_border_color_focus=_AMBER,
+        input_border_color_focus_dark=_AMBER,
+        input_placeholder_color=_CHALK_SUBDUED,
+        input_placeholder_color_dark=_CHALK_SUBDUED,
+        border_color_primary=_WARM_GRAY_BORDER,
+        border_color_primary_dark=_WARM_GRAY_BORDER,
+        border_color_accent=_AMBER,
+        border_color_accent_dark=_AMBER,
+        color_accent=_AMBER,
+        color_accent_soft=_AMBER_SOFT,
+        color_accent_soft_dark=_AMBER_SOFT,
+        button_primary_background_fill=_AMBER,
+        button_primary_background_fill_dark=_AMBER,
+        button_primary_background_fill_hover=_AMBER_BRIGHT,
+        button_primary_background_fill_hover_dark=_AMBER_BRIGHT,
+        button_primary_text_color=_CHARCOAL,
+        button_primary_text_color_dark=_CHARCOAL,
+        button_secondary_background_fill=_CHARCOAL_LIGHTER,
+        button_secondary_background_fill_dark=_CHARCOAL_LIGHTER,
+        button_secondary_background_fill_hover=_WARM_GRAY_BORDER,
+        button_secondary_background_fill_hover_dark=_WARM_GRAY_BORDER,
+        button_secondary_text_color=_CHALK,
+        button_secondary_text_color_dark=_CHALK,
+        link_text_color=_AMBER,
+        link_text_color_dark=_AMBER,
+        link_text_color_hover=_AMBER_BRIGHT,
+        link_text_color_hover_dark=_AMBER_BRIGHT,
     )
 
 
@@ -98,24 +97,24 @@ BISTRO_CSS = f"""
 h1 {{
     font-family: 'Caveat', cursive;
     font-size: 2.6rem;
-    color: {AMBER};
+    color: {_AMBER};
     letter-spacing: 0.02em;
 }}
 
 .message.bot, .message-row.bot-row .message {{
-    background: {CHARCOAL_LIGHT};
-    color: {CHALK};
+    background: {_CHARCOAL_LIGHT};
+    color: {_CHALK};
 }}
 
 .message.user, .message-row.user-row .message {{
-    color: {CHALK};
+    color: {_CHALK};
 }}
 
 /* Meal plans and shopping lists arrive as markdown; render their headings like chalk menu sections */
 .message h2, .message h3 {{
     font-family: 'Caveat', cursive;
-    color: {AMBER};
-    border-bottom: 1px dashed {WARM_GRAY_BORDER};
+    color: {_AMBER};
+    border-bottom: 1px dashed {_WARM_GRAY_BORDER};
     padding-bottom: 0.15em;
 }}
 
@@ -128,6 +127,6 @@ h1 {{
 }}
 
 .message ul li, .message ol li {{
-    color: {CHALK};
+    color: {_CHALK};
 }}
 """

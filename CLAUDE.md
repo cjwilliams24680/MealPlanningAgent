@@ -29,9 +29,9 @@ A conversational meal-planning agent built on the **OpenAI Agents SDK** (`agents
 
 ### Orchestration (agents-as-tools pattern)
 
-`main.py` runs a chat loop: each user turn goes through `Runner.run(starting_agent=orchestration_agent, ...)` with a `SQLiteSession("meal_planner_history.db")` for conversation memory, wrapped in a trace.
+`main.py` runs a chat loop: each user turn goes through `Runner.run(starting_agent=ORCHESTRATION_AGENT, ...)` with a `SQLiteSession("meal_planner_history.db")` for conversation memory, wrapped in a trace.
 
-`orchestration.py` is the hub. The root `orchestration_agent` exposes five sub-agents via `.as_tool(...)`, each with a Pydantic parameter model, implementing the workflow: review preferences → update preferences → generate initial meal pairings → generate replacement pairings → write the final meal plan + shopping list. All agent prompts are long triple-quoted strings inline in this file (shared preamble in `utils.py:BASE_SYSTEM_INSTRUCTIONS`).
+`orchestration.py` is the hub. The root `ORCHESTRATION_AGENT` exposes five sub-agents via `.as_tool(...)`, each with a Pydantic parameter model, implementing the workflow: review preferences → update preferences → generate initial meal pairings → generate replacement pairings → write the final meal plan + shopping list. All agent prompts are long triple-quoted strings inline in this file (shared preamble in `utils.py:BASE_SYSTEM_INSTRUCTIONS`).
 
 ### Generation pipeline
 
@@ -43,6 +43,6 @@ A conversational meal-planning agent built on the **OpenAI Agents SDK** (`agents
 
 ### Cross-cutting details
 
-- **Multi-provider models** (`llm_models.py`): named OpenAI model tiers (`HIGH_EFFORT_MODEL`, `BALANCED_MODEL`, `LOW_EFFORT_MODEL`/`DEFAULT_MODEL`) plus Gemini and Grok reached through `OpenAIChatCompletionsModel` with custom `AsyncOpenAI` base URLs. `get_random_model()` deliberately varies providers for output diversity; validation steps intentionally use a *different* provider than generation (e.g. pairing validation uses Gemini, recipe validation uses Grok).
+- **Multi-provider models** (`llm_models.py`): named OpenAI model tiers (`HIGH_EFFORT_MODEL`, `BALANCED_MODEL`, `_LOW_EFFORT_MODEL`/`DEFAULT_MODEL`) plus Gemini and Grok reached through `OpenAIChatCompletionsModel` with custom `AsyncOpenAI` base URLs. `get_random_model()` deliberately varies providers for output diversity; validation steps intentionally use a *different* provider than generation (e.g. pairing validation uses Gemini, recipe validation uses Grok).
 - **Preferences are in-memory only** (`preferences.py`): a module-level global `saved_user_preferences` holds the `UserPreferences` model; `_sanitize_user_preferences` clamps meals to 1–10 and servings to 1–100. Nothing persists across restarts except chat history in the SQLite session db.
 - `notebooks/prompt_experiments.ipynb` is a cleared scratchpad for prompt iteration; the real prompts live in the Python modules.

@@ -11,7 +11,7 @@ This is kind of a hack thrown together by Claude to allow for multiple sessions
 until I get around to implementing a proper session management system.
 """
 
-MAX_SESSIONS = 100  # LRU cap on concurrently-remembered browser sessions
+_MAX_SESSIONS = 100  # LRU cap on concurrently-remembered browser sessions
 
 
 @dataclass
@@ -34,7 +34,7 @@ def get_or_create_session(session_hash: str) -> UserSession:
         return existing
     user_session = UserSession(history=SQLiteSession(session_id=session_hash))
     _sessions[session_hash] = user_session
-    while len(_sessions) > MAX_SESSIONS:
+    while len(_sessions) > _MAX_SESSIONS:
         _sessions.popitem(last=False)
     return user_session
 

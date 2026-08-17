@@ -3,7 +3,7 @@ import random
 from agents import Agent, Runner, function_tool
 from pydantic import BaseModel, Field
 
-from .llm_models import DEFAULT_MODEL, gemini_model
+from .llm_models import DEFAULT_MODEL, GEMINI_MODEL
 from .meal_brainstorm_generation import create_meal_plan_brainstorm
 from .meal_models import MealPlanIdeas, PreparedDish
 from .preferences import get_user_preferences
@@ -19,23 +19,23 @@ class MealPairingsResult(BaseModel):
     meal_pairings: list[MealPairing] = Field(description="The generated meal pairings.")
 
 
-entree_picking_agent = Agent(
+_ENTREE_PICKING_AGENT = Agent(
     name="Entree Picking Agent",
     instructions=BASE_SYSTEM_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     output_type=list[PreparedDish],
 )
-pairing_agent = Agent(
+_PAIRING_AGENT = Agent(
     name="Meal Pairing Agent",
     instructions=BASE_SYSTEM_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     output_type=list[MealPairing],
 )
 
-meal_choice_validation_agent = Agent(
+_MEAL_CHOICE_VALIDATION_AGENT = Agent(
     name="Meal Choice Validation Agent",
     instructions=BASE_SYSTEM_INSTRUCTIONS,
-    model=gemini_model,
+    model=GEMINI_MODEL,
     output_type=bool,
 )
 
@@ -72,7 +72,7 @@ Make sure that your final selection conforms to the user's preferences:
 
 Make sure that your {number_of_meals} selection(s) are different categories from each other.
 """
-    return (await Runner.run(entree_picking_agent, prompt)).final_output
+    return (await Runner.run(_ENTREE_PICKING_AGENT, prompt)).final_output
 
 
 async def _pair_with_sides(
@@ -101,7 +101,7 @@ If you can't find a side with a shared cuisine type, try to find one with a simi
 
 The entree and side should NEVER be the same dish.
 """
-    return (await Runner.run(pairing_agent, prompt)).final_output
+    return (await Runner.run(_PAIRING_AGENT, prompt)).final_output
 
 
 async def _validate_meal_choices(meals: list[MealPairing]) -> bool:
@@ -114,7 +114,7 @@ You've picked meal(s) for the meal plan':
 Determine if that list conforms to the user's preferences:
 {get_user_preferences()}
 """
-    return (await Runner.run(meal_choice_validation_agent, prompt)).final_output
+    return (await Runner.run(_MEAL_CHOICE_VALIDATION_AGENT, prompt)).final_output
 
 
 async def _generate_meal_pairings(

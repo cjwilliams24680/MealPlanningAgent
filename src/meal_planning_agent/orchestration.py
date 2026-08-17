@@ -14,7 +14,7 @@ from .preferences import get_user_preferences_tool, set_user_preferences
 from .push import send_push_notification
 from .single_dish_writeup import generate_writeup_for_single_dish
 
-REVIEW_USER_PREFERENCES_INSTRUCTIONS = """
+_REVIEW_USER_PREFERENCES_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 
 Soon the user will be presented with meal options and, if approved, the meal plan
@@ -41,9 +41,9 @@ Your final output should look like this:
 {user choice: 1. make changes or 2. proceed to generating meal options}
 
 """
-review_user_preferences_agent = Agent(
+_REVIEW_USER_PREFERENCES_AGENT = Agent(
     name="Review User Preferences Agent",
-    instructions=REVIEW_USER_PREFERENCES_INSTRUCTIONS,
+    instructions=_REVIEW_USER_PREFERENCES_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[get_user_preferences_tool],
 )
@@ -55,7 +55,7 @@ class UserPreferencesUpdate(BaseModel):
     )
 
 
-UPDATE_USER_PREFERENCES_INSTRUCTIONS = """
+_UPDATE_USER_PREFERENCES_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 
 The user has sent a message, requesting changes to their preferences.
@@ -76,14 +76,14 @@ Your final output should look like this:
 {user choice: 1. make changes or 2. proceed to generating meal options}
 
 """
-update_user_preferences_agent = Agent(
+_UPDATE_USER_PREFERENCES_AGENT = Agent(
     name="Update User Preferences Agent",
-    instructions=UPDATE_USER_PREFERENCES_INSTRUCTIONS,
+    instructions=_UPDATE_USER_PREFERENCES_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[get_user_preferences_tool, set_user_preferences],
 )
 
-INITIAL_MEAL_IDEAS_INSTRUCTIONS = """
+_INITIAL_MEAL_IDEAS_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 
 Your job is to offer up a list of meal ideas to the user to review for their meal plan.
@@ -105,9 +105,9 @@ Your final output should look like this:
 {user choice: 1. make changes or 2. proceed to having you write recipes and a shopping list for the meal plan}
 
 """
-initial_meal_plan_ideas_agent = Agent(
+_INITIAL_MEAL_PLAN_IDEAS_AGENT = Agent(
     name="Initial Meal Ideas Agent",
-    instructions=INITIAL_MEAL_IDEAS_INSTRUCTIONS,
+    instructions=_INITIAL_MEAL_IDEAS_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[get_user_preferences_tool, generate_initial_meal_ideas_for_meal_plan],
 )
@@ -122,7 +122,7 @@ class ReplacementMealIdeasInput(BaseModel):
     )
 
 
-REPLACEMENT_MEAL_IDEAS_INSTRUCTIONS = """
+_REPLACEMENT_MEAL_IDEAS_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 
 The user has been given a list of meal ideas to review for their meal plan.
@@ -148,9 +148,9 @@ Your final output should look like this:
 recipes and a shopping list for the meal plan}
 
 """
-replacement_meal_ideas_agent = Agent(
+_REPLACEMENT_MEAL_IDEAS_AGENT = Agent(
     name="Replacement Meal Ideas Agent",
-    instructions=REPLACEMENT_MEAL_IDEAS_INSTRUCTIONS,
+    instructions=_REPLACEMENT_MEAL_IDEAS_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[get_user_preferences_tool, generate_meal_idea_replacements],
 )
@@ -162,7 +162,7 @@ class MealPlanWriteupInput(BaseModel):
     )
 
 
-MEAL_PLAN_WRITEUP_INSTRUCTIONS = """
+_MEAL_PLAN_WRITEUP_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 
 The user has approved your provided list of meal ideas for their meal plan.
@@ -180,9 +180,9 @@ The final output should be a markdown string formatted as follows:
 {thank the user for using your service and ask the user if they would like any further assistance}
 
 """
-meal_plan_writeup_agent = Agent(
-    name="Replacement Meal Ideas Agent",
-    instructions=MEAL_PLAN_WRITEUP_INSTRUCTIONS,
+_MEAL_PLAN_WRITEUP_AGENT = Agent(
+    name="Meal Plan Writeup Agent",
+    instructions=_MEAL_PLAN_WRITEUP_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[get_user_preferences_tool, generate_meal_plan],
 )
@@ -194,7 +194,7 @@ class FeatureRequestInput(BaseModel):
     )
 
 
-FEATURE_REQUEST_INSTRUCTIONS = """
+_FEATURE_REQUEST_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 
 The user has made a request for a feature that you do not yet support.
@@ -207,9 +207,9 @@ Your final output message should:
 3. thank the user for using your service and ask if there is anything else you can help them with.
 
 """
-feature_request_agent = Agent(
+_FEATURE_REQUEST_AGENT = Agent(
     name="Feature Request Agent",
-    instructions=FEATURE_REQUEST_INSTRUCTIONS,
+    instructions=_FEATURE_REQUEST_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[send_push_notification],
 )
@@ -222,7 +222,7 @@ class MealIdeaForIngredientsInput(BaseModel):
     )
 
 
-MEAL_IDEA_FOR_INGREDIENTS_INSTRUCTIONS = """
+_MEAL_IDEA_FOR_INGREDIENTS_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 
 The user has one or more extra ingredients that they want to use for cooking, but they don't know what to make.
@@ -246,9 +246,9 @@ Your final output should look like this:
 {user choice: 1. make changes or 2. proceed to having you write a recipe}
 
 """
-meal_idea_for_ingredients_agent = Agent(
+_MEAL_IDEA_FOR_INGREDIENTS_AGENT = Agent(
     name="Meal Idea for Ingredients Agent",
-    instructions=MEAL_IDEA_FOR_INGREDIENTS_INSTRUCTIONS,
+    instructions=_MEAL_IDEA_FOR_INGREDIENTS_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[get_user_preferences_tool, generate_meal_idea_with_ingredients],
 )
@@ -260,7 +260,7 @@ class SingleDishWriteupInput(BaseModel):
     )
 
 
-SINGLE_DISH_WRITEUP_INSTRUCTIONS = """
+_SINGLE_DISH_WRITEUP_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 
 The user has stated one specific dish that they want to make (no pairings, no meal plan).
@@ -280,14 +280,14 @@ The final output should be a markdown string formatted as follows:
 {thank the user for using your service and ask the user if they would like any further assistance}
 
 """
-single_dish_writeup_agent = Agent(
+_SINGLE_DISH_WRITEUP_AGENT = Agent(
     name="Single Dish Writeup Agent",
-    instructions=SINGLE_DISH_WRITEUP_INSTRUCTIONS,
+    instructions=_SINGLE_DISH_WRITEUP_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[get_user_preferences_tool, generate_writeup_for_single_dish],
 )
 
-ORCHESTRATION_INSTRUCTIONS = """
+_ORCHESTRATION_INSTRUCTIONS = """
 You run a business that helps people plan their meals.
 You have tools that handle the individual steps of planning the meals.
 You should not do any of the individual steps yourself. Rely on the tools to do that.
@@ -301,39 +301,39 @@ If a user makes any requests that are within the scope of the meal planning proc
 but you are not able to complete the request then you should use the feature_request_agent
 tool to send a feature request to the developer.
 """
-orchestration_agent = Agent(
+ORCHESTRATION_AGENT = Agent(
     name="Meal Plan Orchestration Agent",
-    instructions=ORCHESTRATION_INSTRUCTIONS,
+    instructions=_ORCHESTRATION_INSTRUCTIONS,
     model=DEFAULT_MODEL,
     tools=[
-        review_user_preferences_agent.as_tool(
+        _REVIEW_USER_PREFERENCES_AGENT.as_tool(
             tool_name="review_user_preferences_agent_tool",
             tool_description="Use this tool to review the user's current preferences with them.",
         ),
-        update_user_preferences_agent.as_tool(
+        _UPDATE_USER_PREFERENCES_AGENT.as_tool(
             tool_name="update_user_preferences_agent_tool",
             tool_description="Use this tool to update the user's preferences when they request changes.",
             parameters=UserPreferencesUpdate,
         ),
-        initial_meal_plan_ideas_agent.as_tool(
+        _INITIAL_MEAL_PLAN_IDEAS_AGENT.as_tool(
             tool_name="initial_meal_plan_ideas_agent_tool",
             tool_description="Use this tool to generate a list of meal pairings based on "
             "the preferences and present them to the user for feedback.",
         ),
-        replacement_meal_ideas_agent.as_tool(
+        _REPLACEMENT_MEAL_IDEAS_AGENT.as_tool(
             tool_name="replacement_meal_ideas_agent_tool",
             tool_description="Use this tool to generate replacement meal ideas for any "
             "of the meals that the user rejects.",
             parameters=ReplacementMealIdeasInput,
         ),
-        meal_plan_writeup_agent.as_tool(
+        _MEAL_PLAN_WRITEUP_AGENT.as_tool(
             tool_name="meal_plan_writeup_agent_tool",
             tool_description="Use this tool to write a complete meal plan. The tool will "
             "return a markdown string. Send that string to the user, exactly as it is "
             "returned to you by the tool.",
             parameters=MealPlanWriteupInput,
         ),
-        feature_request_agent.as_tool(
+        _FEATURE_REQUEST_AGENT.as_tool(
             tool_name="feature_request_agent_tool",
             tool_description="Use this tool to send a feature request to the "
             "developer. Use this tool when the user makes a request for a feature "
@@ -341,12 +341,12 @@ orchestration_agent = Agent(
             "message to display to the user.",
             parameters=FeatureRequestInput,
         ),
-        meal_idea_for_ingredients_agent.as_tool(
+        _MEAL_IDEA_FOR_INGREDIENTS_AGENT.as_tool(
             tool_name="meal_idea_for_ingredients_agent_tool",
             tool_description="Use this tool to generate a dish idea that utilizes specific ingredients.",
             parameters=MealIdeaForIngredientsInput,
         ),
-        single_dish_writeup_agent.as_tool(
+        _SINGLE_DISH_WRITEUP_AGENT.as_tool(
             tool_name="single_dish_writeup_agent_tool",
             tool_description="This tool generates a recipe and shopping list "
             "for a single dish. Only use this tool when the user has requested "

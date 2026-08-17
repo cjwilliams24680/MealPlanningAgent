@@ -22,7 +22,7 @@ class MealPlan(BaseModel):
     )
 
 
-author_agent = Agent(
+_AUTHOR_AGENT = Agent(
     name="Meal Plan Author", model=DEFAULT_MODEL, instructions=BASE_SYSTEM_INSTRUCTIONS
 )
 
@@ -38,7 +38,7 @@ level summary of the dishes that are included in the meal plan.
 Then there should be a divider followed by a detailed section specific to each PreparedDish.
 Each should include an ingredients segment and a cooking instructions segment.
 """
-    return (await Runner.run(author_agent, prompt)).final_output
+    return (await Runner.run(_AUTHOR_AGENT, prompt)).final_output
 
 
 def _write_shopping_list(meals: list[MealPlanItem]) -> str:

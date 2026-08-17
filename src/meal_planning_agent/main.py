@@ -4,7 +4,7 @@ import gradio as gr
 from agents import Runner, trace
 
 from .auth import get_or_create_session, set_current_session
-from .orchestration import orchestration_agent
+from .orchestration import ORCHESTRATION_AGENT
 from .theme import BISTRO_CSS, bistro_theme
 
 
@@ -17,7 +17,7 @@ async def _chat(message, history, request: gr.Request):
     with trace("Meal Planning Agent"):
         return (
             await Runner.run(
-                starting_agent=orchestration_agent,
+                starting_agent=ORCHESTRATION_AGENT,
                 input=message,
                 session=user_session.history,
             )

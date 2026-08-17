@@ -9,15 +9,15 @@ from .preferences import get_user_preferences
 from .seasonal_report import get_seasonal_report
 from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp
 
-BRAINSTORM_INSTRUCTIONS = f"""
+_BRAINSTORM_INSTRUCTIONS = f"""
 {BASE_SYSTEM_INSTRUCTIONS}
 
 Prioritize meals that can be made with minimal (less than ten) unique ingredients.
 """
 
-meal_brainstorming_agent = Agent(
+_MEAL_BRAINSTORMING_AGENT = Agent(
     name="Meal Brainstormer",
-    instructions=BRAINSTORM_INSTRUCTIONS,
+    instructions=_BRAINSTORM_INSTRUCTIONS,
     model=get_random_model(),
     output_type=list[PreparedDish],
 )
@@ -46,7 +46,7 @@ Here is the user's preferences:
         f"{get_seasonal_report()}. Try to pick meals that are popular for this time of year."
         f"{user_preferences_prompt}. {additional_instructions}"
     )
-    return (await Runner.run(meal_brainstorming_agent, prompt)).final_output
+    return (await Runner.run(_MEAL_BRAINSTORMING_AGENT, prompt)).final_output
 
 
 async def create_meal_plan_brainstorm(
