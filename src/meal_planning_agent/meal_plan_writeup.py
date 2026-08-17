@@ -1,7 +1,7 @@
 from agents import Agent, Runner, function_tool
 from pydantic import BaseModel, Field
 
-from .llm_models import default_model
+from .llm_models import DEFAULT_MODEL
 from .meal_pairing import MealPairing
 from .recipe_generation import generate_recipes
 from .recipe_models import MealPlanItem
@@ -10,7 +10,7 @@ from .shopping_list import (
     get_consolidated_ingredients,
     sort_ingredients,
 )
-from .utils import base_system_instructions
+from .utils import BASE_SYSTEM_INSTRUCTIONS
 
 
 class MealPlan(BaseModel):
@@ -23,7 +23,7 @@ class MealPlan(BaseModel):
 
 
 author_agent = Agent(
-    name="Meal Plan Author", model=default_model, instructions=base_system_instructions
+    name="Meal Plan Author", model=DEFAULT_MODEL, instructions=BASE_SYSTEM_INSTRUCTIONS
 )
 
 

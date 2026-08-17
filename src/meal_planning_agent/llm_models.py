@@ -5,10 +5,10 @@ from openai import AsyncOpenAI
 
 from .utils import assertKeyExists
 
-high_effort_model = "gpt-5.6-sol"
-balanced_model = "gpt-5.6-terra"
-low_effort_model = "gpt-5.6-luna"
-default_model = low_effort_model
+HIGH_EFFORT_MODEL = "gpt-5.6-sol"
+BALANCED_MODEL = "gpt-5.6-terra"
+LOW_EFFORT_MODEL = "gpt-5.6-luna"
+DEFAULT_MODEL = LOW_EFFORT_MODEL
 
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 gemini_client = AsyncOpenAI(
@@ -27,5 +27,5 @@ grok_model = OpenAIChatCompletionsModel(model="grok-4.5", openai_client=grok_cli
 
 # Randomly returns a model so that the behavior is more variable
 def get_random_model():
-    models = [default_model, gemini_model, grok_model]
+    models = [DEFAULT_MODEL, gemini_model, grok_model]
     return random.choice(models)

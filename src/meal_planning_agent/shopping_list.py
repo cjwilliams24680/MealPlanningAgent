@@ -1,4 +1,4 @@
-from .recipe_models import Ingredient, MealPlanItem, grocery_departments
+from .recipe_models import GROCERY_DEPARTMENTS, Ingredient, MealPlanItem
 
 
 def get_consolidated_ingredients(meal_plan: list[MealPlanItem]) -> list[Ingredient]:
@@ -39,13 +39,13 @@ def get_consolidated_ingredients(meal_plan: list[MealPlanItem]) -> list[Ingredie
 
 
 def sort_ingredients(ingredients: list[Ingredient]) -> list[Ingredient]:
-    order_map = {dept: i for i, dept in enumerate(grocery_departments)}
+    order_map = {dept: i for i, dept in enumerate(GROCERY_DEPARTMENTS)}
 
     def sorting_key(item: Ingredient):
         # Primary key: the index from our map.
         # .get() handles cases where a department might not be in the list (defaults to the end)
         department_rank = order_map.get(
-            item.grocery_store_department, len(grocery_departments)
+            item.grocery_store_department, len(GROCERY_DEPARTMENTS)
         )
 
         # Secondary key: the name (alphabetical)

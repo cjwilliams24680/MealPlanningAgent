@@ -7,17 +7,17 @@ from .meal_brainstorm_validation import filter_meal_ideas
 from .meal_models import MealPlanIdeas, PreparedDish
 from .preferences import get_user_preferences
 from .seasonal_report import get_seasonal_report
-from .utils import base_system_instructions, clamp
+from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp
 
-brainstorm_instructions = f"""
-{base_system_instructions}
+BRAINSTORM_INSTRUCTIONS = f"""
+{BASE_SYSTEM_INSTRUCTIONS}
 
 Prioritize meals that can be made with minimal (less than ten) unique ingredients.
 """
 
 meal_brainstorming_agent = Agent(
     name="Meal Brainstormer",
-    instructions=brainstorm_instructions,
+    instructions=BRAINSTORM_INSTRUCTIONS,
     model=get_random_model(),
     output_type=list[PreparedDish],
 )

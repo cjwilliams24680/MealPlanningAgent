@@ -3,11 +3,11 @@ import random
 from agents import Agent, Runner, function_tool
 from pydantic import BaseModel, Field
 
-from .llm_models import default_model, gemini_model
+from .llm_models import DEFAULT_MODEL, gemini_model
 from .meal_brainstorm_generation import create_meal_plan_brainstorm
 from .meal_models import MealPlanIdeas, PreparedDish
 from .preferences import get_user_preferences
-from .utils import base_system_instructions, clamp, to_markdown_list
+from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp, to_markdown_list
 
 
 class MealPairing(BaseModel):
@@ -21,20 +21,20 @@ class MealPairingsResult(BaseModel):
 
 entree_picking_agent = Agent(
     name="Entree Picking Agent",
-    instructions=base_system_instructions,
-    model=default_model,
+    instructions=BASE_SYSTEM_INSTRUCTIONS,
+    model=DEFAULT_MODEL,
     output_type=list[PreparedDish],
 )
 pairing_agent = Agent(
     name="Meal Pairing Agent",
-    instructions=base_system_instructions,
-    model=default_model,
+    instructions=BASE_SYSTEM_INSTRUCTIONS,
+    model=DEFAULT_MODEL,
     output_type=list[MealPairing],
 )
 
 meal_choice_validation_agent = Agent(
     name="Meal Choice Validation Agent",
-    instructions=base_system_instructions,
+    instructions=BASE_SYSTEM_INSTRUCTIONS,
     model=gemini_model,
     output_type=bool,
 )

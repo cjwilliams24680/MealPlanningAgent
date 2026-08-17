@@ -1,20 +1,20 @@
 from agents import Agent, Runner
 
-from .llm_models import gemini_model, high_effort_model
+from .llm_models import HIGH_EFFORT_MODEL, gemini_model
 from .meal_models import PreparedDish
 from .preferences import get_user_preferences
 from .recipe_models import Recipe
-from .utils import base_system_instructions
+from .utils import BASE_SYSTEM_INSTRUCTIONS
 
 recipe_adjustment_agent = Agent(
     name="Recipe Generation Agent",
-    instructions=base_system_instructions,
-    model=high_effort_model,
+    instructions=BASE_SYSTEM_INSTRUCTIONS,
+    model=HIGH_EFFORT_MODEL,
     output_type=Recipe,
 )
 recipe_validation_agent = Agent(
     name="Recipe Generation Agent",
-    instructions=base_system_instructions,
+    instructions=BASE_SYSTEM_INSTRUCTIONS,
     model=gemini_model,
     output_type=bool,
 )

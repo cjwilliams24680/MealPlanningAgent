@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from .meal_models import PreparedDish
 
-grocery_departments = [
+GROCERY_DEPARTMENTS = [
     "Produce",
     "Bakery",
     "Pantry",
@@ -30,7 +30,7 @@ class Ingredient(BaseModel):
     )
     grocery_store_department: str = Field(
         description="The area of the grocery store where this ingredient can be "
-        f"found. Here are the valid values: {grocery_departments}"
+        f"found. Here are the valid values: {GROCERY_DEPARTMENTS}"
     )
 
 

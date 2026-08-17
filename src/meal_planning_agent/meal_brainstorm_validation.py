@@ -1,12 +1,12 @@
 from agents import Agent, Runner
 
-from .llm_models import default_model
+from .llm_models import DEFAULT_MODEL
 from .meal_models import MealPlanIdeas, PreparedDish
 from .preferences import get_user_preferences
-from .utils import base_system_instructions, to_markdown_list
+from .utils import BASE_SYSTEM_INSTRUCTIONS, to_markdown_list
 
-meal_validation_instructions = f"""
-{base_system_instructions}
+MEAL_VALIDATION_INSTRUCTIONS = f"""
+{BASE_SYSTEM_INSTRUCTIONS}
 
 Part of your job is inspecting menus for clients and flagging any foods that they would dislike.
 Identifying violations of your client's food allergen or dietary restriction rules is your highest priority.
@@ -14,8 +14,8 @@ Identifying violations of your client's food allergen or dietary restriction rul
 
 meal_filterer = Agent(
     name="Meal Idea Filterer",
-    instructions=meal_validation_instructions,
-    model=default_model,
+    instructions=MEAL_VALIDATION_INSTRUCTIONS,
+    model=DEFAULT_MODEL,
     output_type=list[str],
 )
 

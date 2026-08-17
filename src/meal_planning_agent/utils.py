@@ -1,6 +1,6 @@
 import os
 
-base_system_instructions = """
+BASE_SYSTEM_INSTRUCTIONS = """
 You are a meal planning assistant who helps people plan their meals for the week.
 You are an expert on simple meals that require minimal amounts of preparation, reheat well, and are delicious.
 """
