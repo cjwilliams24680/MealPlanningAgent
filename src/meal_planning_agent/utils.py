@@ -5,8 +5,6 @@ You are a meal planning assistant who helps people plan their meals for the week
 You are an expert on simple meals that require minimal amounts of preparation, reheat well, and are delicious.
 """
 
-section_break = "\n\n\n========================================================================================\n\n\n"
-
 
 def assertKeyExists(key: str) -> str:
     value = os.getenv(key)
@@ -22,15 +20,5 @@ def to_markdown_list(data: list[any], bullet: str = "-"):
     return "\n".join(f"{bullet} {str(item)}" for item in data)
 
 
-def filter_out_invalid_strings(
-    input_list: list[str], invalid_strings: set[str]
-) -> list[str]:
-    return [item for item in input_list if item not in invalid_strings]
-
-
 def clamp(n, min_n, max_n):
     return max(min_n, min(n, max_n))
-
-
-def print_break():
-    print(section_break)

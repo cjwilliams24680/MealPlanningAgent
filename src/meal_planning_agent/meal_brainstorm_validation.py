@@ -20,7 +20,7 @@ meal_filterer = Agent(
 )
 
 
-def filter_out_flagged_dishes(
+def _filter_out_flagged_dishes(
     dishes: list[PreparedDish], flagged_names: set[str]
 ) -> list[PreparedDish]:
     return [dish for dish in dishes if dish.name not in flagged_names]
@@ -42,6 +42,6 @@ async def filter_meal_ideas(meal_ideas: MealPlanIdeas) -> MealPlanIdeas:
 
     # Filter out flagged foods and shuffle them to make the selection more random.
     return MealPlanIdeas(
-        entree_ideas=filter_out_flagged_dishes(meal_ideas.entree_ideas, flagged_foods),
-        side_ideas=filter_out_flagged_dishes(meal_ideas.side_ideas, flagged_foods),
+        entree_ideas=_filter_out_flagged_dishes(meal_ideas.entree_ideas, flagged_foods),
+        side_ideas=_filter_out_flagged_dishes(meal_ideas.side_ideas, flagged_foods),
     )

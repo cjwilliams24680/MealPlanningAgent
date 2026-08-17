@@ -19,12 +19,12 @@ recipe_generation_agent = Agent(
 
 
 async def generate_recipes(meals: list[MealPairing]) -> list[MealPlanItem]:
-    tasks = [generate_recipes_for_meal(item) for item in meals]
+    tasks = [_generate_recipes_for_meal(item) for item in meals]
     meal_plan_items = await asyncio.gather(*tasks)
     return meal_plan_items
 
 
-async def generate_recipes_for_meal(meal: MealPairing) -> MealPlanItem:
+async def _generate_recipes_for_meal(meal: MealPairing) -> MealPlanItem:
     entree_recipe, side_recipe = await asyncio.gather(
         generate_recipe(meal.entree),
         generate_recipe(meal.side),

@@ -16,7 +16,7 @@ class SingleDishWriteup(BaseModel):
     )
 
 
-def write_shopping_list(recipe: Recipe) -> str:
+def _write_shopping_list(recipe: Recipe) -> str:
     sorted_ingredients = sort_ingredients(recipe.ingredients)
     return generate_ingredients_markdown(sorted_ingredients)
 
@@ -36,6 +36,6 @@ async def generate_writeup_for_single_dish(
     recipe = await generate_recipe(requested_dish)
     writeup = SingleDishWriteup(
         recipe_markdown=recipe.cooking_instructions,
-        shopping_list_markdown=write_shopping_list(recipe=recipe),
+        shopping_list_markdown=_write_shopping_list(recipe=recipe),
     )
     return writeup

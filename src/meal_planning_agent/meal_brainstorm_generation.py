@@ -23,7 +23,7 @@ meal_brainstorming_agent = Agent(
 )
 
 
-async def generate_dish_ideas(
+async def _generate_dish_ideas(
     number_of_dishes: int,
     dish_type: str,
     meals_to_avoid: list[str],
@@ -56,13 +56,13 @@ async def create_meal_plan_brainstorm(
     additional_instructions: str = "",
 ) -> MealPlanIdeas:
     entrees, sides = await asyncio.gather(
-        generate_dish_ideas(
+        _generate_dish_ideas(
             number_of_dishes=number_of_entrees,
             dish_type="entrees",
             meals_to_avoid=meals_to_avoid,
             additional_instructions=additional_instructions,
         ),
-        generate_dish_ideas(
+        _generate_dish_ideas(
             number_of_dishes=number_of_sides,
             dish_type="sides",
             meals_to_avoid=meals_to_avoid,
@@ -96,7 +96,7 @@ async def generate_meal_idea_with_ingredients(
     Here is the list of ingredients:
     {ingredients}
     """
-    dish_ideas = await generate_dish_ideas(
+    dish_ideas = await _generate_dish_ideas(
         number_of_dishes=1,
         dish_type="foods",
         meals_to_avoid=previous_meal_ideas,

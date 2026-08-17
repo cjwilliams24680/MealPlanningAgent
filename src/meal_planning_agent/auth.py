@@ -27,7 +27,7 @@ _current_session: ContextVar[SessionState | None] = ContextVar(
 )
 
 
-def _get_or_create_session(session_hash: str) -> UserSession:
+def get_or_create_session(session_hash: str) -> UserSession:
     existing = _sessions.get(session_hash)
     if existing is not None:
         _sessions.move_to_end(session_hash)
@@ -44,7 +44,7 @@ def set_current_session(state: SessionState) -> None:
     _current_session.set(state)
 
 
-def _require_session() -> SessionState:
+def require_session() -> SessionState:
     state = _current_session.get()
     if state is None:
         raise RuntimeError("No session bound; call set_current_session() first.")

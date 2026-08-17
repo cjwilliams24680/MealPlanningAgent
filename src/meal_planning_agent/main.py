@@ -3,16 +3,16 @@ import uuid
 import gradio as gr
 from agents import Runner, trace
 
-from .auth import _get_or_create_session, set_current_session
+from .auth import get_or_create_session, set_current_session
 from .orchestration import orchestration_agent
 from .theme import BISTRO_CSS, bistro_theme
 
 
-async def chat(message, history, request: gr.Request):
+async def _chat(message, history, request: gr.Request):
     # request/session_hash is None for direct API calls and example caching;
     # give those an isolated session
     session_hash = (request and request.session_hash) or str(uuid.uuid4())
-    user_session = _get_or_create_session(session_hash)
+    user_session = get_or_create_session(session_hash)
     set_current_session(user_session.state)
     with trace("Meal Planning Agent"):
         return (
@@ -32,7 +32,7 @@ def run():
     """
 
     gr.ChatInterface(
-        chat,
+        _chat,
         title="🍷 Meal Planner",
         description=introduction,
         concurrency_limit=10,  # Gradio's default of 1 serializes all users

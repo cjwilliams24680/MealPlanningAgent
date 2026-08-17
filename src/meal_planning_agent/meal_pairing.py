@@ -40,23 +40,23 @@ meal_choice_validation_agent = Agent(
 )
 
 
-async def generate_meals(
+async def _generate_meals(
     brainstorm_results: MealPlanIdeas, number_of_meals: int
 ) -> list[MealPairing]:
     attempts = 0
     while True:
         attempts += 1
-        entree_choices = await pick_entrees(
+        entree_choices = await _pick_entrees(
             number_of_meals=number_of_meals, entrees=brainstorm_results.entree_ideas
         )
-        meal_choices = await pair_with_sides(
+        meal_choices = await _pair_with_sides(
             entrees=entree_choices, sides=brainstorm_results.side_ideas
         )
-        if await validate_meal_choices(meal_choices) or attempts > 3:
+        if await _validate_meal_choices(meal_choices) or attempts > 3:
             return meal_choices
 
 
-async def pick_entrees(
+async def _pick_entrees(
     number_of_meals: int, entrees: list[PreparedDish]
 ) -> list[PreparedDish]:
     # Shuffle to make meal selection more unpredictable
@@ -75,7 +75,7 @@ async def pick_entrees(
     return (await Runner.run(entree_picking_agent, prompt)).final_output
 
 
-async def pair_with_sides(
+async def _pair_with_sides(
     entrees: list[PreparedDish], sides: list[PreparedDish]
 ) -> list[MealPairing]:
     # Shuffle to make meal selection more unpredictable
@@ -104,7 +104,7 @@ async def pair_with_sides(
     return (await Runner.run(pairing_agent, prompt)).final_output
 
 
-async def validate_meal_choices(meals: list[MealPairing]) -> bool:
+async def _validate_meal_choices(meals: list[MealPairing]) -> bool:
     prompt = f"""
     You're writing a meal plan for the user.
 
@@ -117,7 +117,7 @@ async def validate_meal_choices(meals: list[MealPairing]) -> bool:
     return (await Runner.run(meal_choice_validation_agent, prompt)).final_output
 
 
-async def generate_meal_pairings(
+async def _generate_meal_pairings(
     number_of_meals: int, meals_to_avoid: list[str] | None = None
 ) -> list[MealPairing]:
     if meals_to_avoid is None:
@@ -128,7 +128,7 @@ async def generate_meal_pairings(
         number_of_sides=number_of_meals,
         meals_to_avoid=meals_to_avoid,
     )
-    return await generate_meals(
+    return await _generate_meals(
         brainstorm_results=brainstorm_results, number_of_meals=number_of_meals
     )
 
@@ -143,7 +143,7 @@ async def generate_initial_meal_ideas_for_meal_plan() -> MealPairingsResult:
         A list of meal pairings for the user to review.
     """
     number_of_meals = get_user_preferences().number_of_meals_per_meal_plan
-    meal_pairings = await generate_meal_pairings(number_of_meals=number_of_meals)
+    meal_pairings = await _generate_meal_pairings(number_of_meals=number_of_meals)
     return MealPairingsResult(meal_pairings=meal_pairings)
 
 
@@ -160,7 +160,7 @@ async def generate_meal_idea_replacements(
     Returns:
         A list of meal pairings for the user to review
     """
-    meal_pairings = await generate_meal_pairings(
+    meal_pairings = await _generate_meal_pairings(
         number_of_meals=number_of_meals_to_replace, meals_to_avoid=previous_meal_ideas
     )
     return MealPairingsResult(meal_pairings=meal_pairings)
