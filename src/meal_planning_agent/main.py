@@ -26,10 +26,10 @@ async def _chat(message, history, request: gr.Request):
 
 def run():
     introduction = """
-    ## Hello! I'm your AI Meal Planner. I am here to help with your meal planning needs.
-    ### Where would you like to start?
-    (Select an example or type your own message)
-    """
+## Hello! I'm your AI Meal Planner. I am here to help with your meal planning needs.
+### Where would you like to start?
+(Select an example or type your own message)
+"""
 
     gr.ChatInterface(
         _chat,

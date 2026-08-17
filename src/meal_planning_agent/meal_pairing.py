@@ -62,16 +62,16 @@ async def _pick_entrees(
     # Shuffle to make meal selection more unpredictable
     shuffled_entrees = random.sample(entrees, len(entrees))
     prompt = f"""
-    Your job is to pick {number_of_meals} entree(s) for the user's meal plan.
+Your job is to pick {number_of_meals} entree(s) for the user's meal plan.
 
-    You can choose from the following list:
-    {to_markdown_list(shuffled_entrees)}
+You can choose from the following list:
+{to_markdown_list(shuffled_entrees)}
 
-    Make sure that your final selection conforms to the user's preferences:
-    {get_user_preferences()}
+Make sure that your final selection conforms to the user's preferences:
+{get_user_preferences()}
 
-    Make sure that your {number_of_meals} selection(s) are different categories from each other.
-    """
+Make sure that your {number_of_meals} selection(s) are different categories from each other.
+"""
     return (await Runner.run(entree_picking_agent, prompt)).final_output
 
 
@@ -81,39 +81,39 @@ async def _pair_with_sides(
     # Shuffle to make meal selection more unpredictable
     shuffled_sides = random.sample(sides, len(sides))
     prompt = f"""
-    You're writing a meal plan for the user.
+You're writing a meal plan for the user.
 
-    You already have the entrees picked out:
-    {to_markdown_list(entrees)}
+You already have the entrees picked out:
+{to_markdown_list(entrees)}
 
-    Now you need to pair those entrees with sides so that you have a complete meal.
+Now you need to pair those entrees with sides so that you have a complete meal.
 
-    Do NOT pick a side that has the same core ingredients as the entree.
-    Example: Don't pair a chicken burrito bowl entree with a side of grilled chicken
-    skewers because chicken is a core ingredient for both.
+Do NOT pick a side that has the same core ingredients as the entree.
+Example: Don't pair a chicken burrito bowl entree with a side of grilled chicken
+skewers because chicken is a core ingredient for both.
 
-    You can choose from the following list of sides:
-    {to_markdown_list(shuffled_sides)}
+You can choose from the following list of sides:
+{to_markdown_list(shuffled_sides)}
 
-    For each entree, try to pick a side that compliments it.
-    This means that they should ideally share a cuisine type.
-    If you can't find a side with a shared cuisine type, try to find one with a similar cuisine.
+For each entree, try to pick a side that compliments it.
+This means that they should ideally share a cuisine type.
+If you can't find a side with a shared cuisine type, try to find one with a similar cuisine.
 
-    The entree and side should NEVER be the same dish.
-    """
+The entree and side should NEVER be the same dish.
+"""
     return (await Runner.run(pairing_agent, prompt)).final_output
 
 
 async def _validate_meal_choices(meals: list[MealPairing]) -> bool:
     prompt = f"""
-    You're writing a meal plan for the user.
+You're writing a meal plan for the user.
 
-    You've picked meal(s) for the meal plan':
-    {to_markdown_list(meals)}
+You've picked meal(s) for the meal plan':
+{to_markdown_list(meals)}
 
-    Determine if that list conforms to the user's preferences:
-    {get_user_preferences()}
-    """
+Determine if that list conforms to the user's preferences:
+{get_user_preferences()}
+"""
     return (await Runner.run(meal_choice_validation_agent, prompt)).final_output
 
 

@@ -36,9 +36,9 @@ async def _generate_dish_ideas(
 
     preferences = get_user_preferences()
     user_preferences_prompt = f"""
-    Here is the user's preferences:
-    {preferences}
-    """
+Here is the user's preferences:
+{preferences}
+"""
 
     prompt = (
         f"Suggest {number_of_ideas} different {dish_type}. "
@@ -93,9 +93,9 @@ async def generate_meal_idea_with_ingredients(
         A meal idea that utilizes the given ingredients.
     """
     ingredients_prompt = f"""
-    Here is the list of ingredients:
-    {ingredients}
-    """
+Here is the list of ingredients:
+{ingredients}
+"""
     dish_ideas = await _generate_dish_ideas(
         number_of_dishes=1,
         dish_type="foods",

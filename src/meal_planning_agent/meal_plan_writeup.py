@@ -29,15 +29,15 @@ author_agent = Agent(
 
 async def _write_meal_plan(meals: list[MealPlanItem]) -> str:
     prompt = f"""
-    You have generated the following meal plan items:
-    {meals}
+You have generated the following meal plan items:
+{meals}
 
-    I want you to write a pretty Markdown string. It should start off with a high
-    level summary of the dishes that are included in the meal plan.
+I want you to write a pretty Markdown string. It should start off with a high
+level summary of the dishes that are included in the meal plan.
 
-    Then there should be a divider followed by a detailed section specific to each PreparedDish.
-    Each should include an ingredients segment and a cooking instructions segment.
-    """
+Then there should be a divider followed by a detailed section specific to each PreparedDish.
+Each should include an ingredients segment and a cooking instructions segment.
+"""
     return (await Runner.run(author_agent, prompt)).final_output
 
 

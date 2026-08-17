@@ -29,15 +29,15 @@ def _filter_out_flagged_dishes(
 async def filter_meal_ideas(meal_ideas: MealPlanIdeas) -> MealPlanIdeas:
     all_dishes = meal_ideas.entree_ideas + meal_ideas.side_ideas
     prompt = f"""
-    You have a list of foods that have been generated as candidates for the user's meal plan:
-    {to_markdown_list([dish.name for dish in all_dishes])}
+You have a list of foods that have been generated as candidates for the user's meal plan:
+{to_markdown_list([dish.name for dish in all_dishes])}
 
-    Here is the user's meal plan preferences:
-    {get_user_preferences()}
+Here is the user's meal plan preferences:
+{get_user_preferences()}
 
-    Your job is to identify and return the exact dish names from the list above
-    that are poor candidates based on the user's preferences.
-    """
+Your job is to identify and return the exact dish names from the list above
+that are poor candidates based on the user's preferences.
+"""
     flagged_foods = set((await Runner.run(meal_filterer, prompt)).final_output)
 
     # Filter out flagged foods and shuffle them to make the selection more random.

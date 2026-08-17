@@ -39,17 +39,17 @@ async def _generate_recipes_for_meal(meal: MealPairing) -> MealPlanItem:
 
 async def generate_recipe(dish: PreparedDish) -> Recipe:
     prompt = f"""
-    The user has selected the following meal for their meal plan:
-    {dish}
+The user has selected the following meal for their meal plan:
+{dish}
 
-    I want you to generate a recipe for the above.
-    Break it into 3 sections: Ingredients, Preparation Instructions, Cooking Instructions
+I want you to generate a recipe for the above.
+Break it into 3 sections: Ingredients, Preparation Instructions, Cooking Instructions
 
-    Make sure that the recipe conforms to the user's preferences:
-    {get_user_preferences()}
+Make sure that the recipe conforms to the user's preferences:
+{get_user_preferences()}
 
-    The recipe should use less than 10 ingredients and preparation time under 20 minutes.
-    """
+The recipe should use less than 10 ingredients and preparation time under 20 minutes.
+"""
     attempts = 0
     while True:
         attempts += 1
