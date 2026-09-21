@@ -1,6 +1,6 @@
 from agents import function_tool
 
-from .auth import require_session
+from .legacy_auth import require_session
 from .preference_models import UserPreferences
 from .utils import clamp
 
