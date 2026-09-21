@@ -3,7 +3,8 @@ import uuid
 import gradio as gr
 from agents import Runner, trace
 
-from .auth import get_or_create_session, set_current_session
+from .auth import UserMetadata
+from .legacy_auth import get_or_create_session, set_current_session
 from .orchestration import ORCHESTRATION_AGENT
 from .theme import BISTRO_CSS, bistro_theme
 
@@ -20,6 +21,7 @@ async def _chat(message, history, request: gr.Request):
                 starting_agent=ORCHESTRATION_AGENT,
                 input=message,
                 session=user_session.history,
+                context=UserMetadata(session_id=user_session.session_id),
             )
         ).final_output
 
