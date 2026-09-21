@@ -21,7 +21,7 @@ async def _chat(message, history, request: gr.Request):
                 starting_agent=ORCHESTRATION_AGENT,
                 input=message,
                 session=user_session.history,
-                context=UserMetadata(session_id=user_session.session_id),
+                context=UserMetadata(session_id=session_hash),
             )
         ).final_output
 

@@ -5,7 +5,7 @@ from agents import Agent, Runner, function_tool
 from .llm_models import get_random_model
 from .meal_brainstorm_validation import filter_meal_ideas
 from .meal_models import MealPlanIdeas, PreparedDish
-from .preferences import get_user_preferences
+from .preferences_legacy import get_user_preferences
 from .seasonal_report import get_seasonal_report
 from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp
 

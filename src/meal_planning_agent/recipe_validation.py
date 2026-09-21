@@ -2,7 +2,7 @@ from agents import Agent, Runner
 
 from .llm_models import GEMINI_MODEL, HIGH_EFFORT_MODEL
 from .meal_models import PreparedDish
-from .preferences import get_user_preferences
+from .preferences_legacy import get_user_preferences
 from .recipe_models import Recipe
 from .utils import BASE_SYSTEM_INSTRUCTIONS
 

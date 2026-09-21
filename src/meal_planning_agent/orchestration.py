@@ -10,7 +10,7 @@ from .meal_pairing import (
     generate_meal_idea_replacements,
 )
 from .meal_plan_writeup import generate_meal_plan
-from .preferences import get_user_preferences_tool, set_user_preferences
+from .preferences_legacy import get_user_preferences_tool, set_user_preferences
 from .push import send_push_notification
 from .single_dish_writeup import generate_writeup_for_single_dish
 

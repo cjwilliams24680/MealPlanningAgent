@@ -5,7 +5,7 @@ from agents import Agent, Runner
 from .llm_models import BALANCED_MODEL
 from .meal_models import PreparedDish
 from .meal_pairing import MealPairing
-from .preferences import get_user_preferences
+from .preferences_legacy import get_user_preferences
 from .recipe_models import MealPlanItem, Recipe
 from .recipe_validation import adjust_for_servings_count_if_necessary, validate_recipe
 from .utils import BASE_SYSTEM_INSTRUCTIONS
