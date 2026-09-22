@@ -34,7 +34,8 @@ Optional: set `DEBUG_AGENT_LOGS=1` to enable verbose agent SDK logging
 
 ```bash
 uv sync                    # install dependencies
-uv run meal-planning-agent # launch the chat UI at http://127.0.0.1:7860
+uv run meal-planning-agent # launch the gradio app at http://127.0.0.1:7860
+uv run fastapi dev ./src/meal_planning_agent/fast_api.py  # launch FastAPI app
 uv run ruff format .       # format
 uv run ruff check .        # lint
 ```
