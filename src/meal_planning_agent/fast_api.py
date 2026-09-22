@@ -52,8 +52,10 @@ async def initialize(
     cookies: Annotated[AppCookies, Cookie()],
     response: Response,
 ):
-    if not cookies.session_id:
-        response.set_cookie(key="session_id", value=create_session())
+    session_id = cookies.session_id
+    if not session_id:
+        session_id = create_session()
+    response.set_cookie(key="session_id", value=session_id)
 
     response.set_cookie(key="conversation_id", value=create_conversation())
 
