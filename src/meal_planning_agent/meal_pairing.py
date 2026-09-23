@@ -58,7 +58,12 @@ async def _generate_meals(
         meal_choices = await _pair_with_sides(
             entrees=entree_choices, sides=brainstorm_results.side_ideas
         )
-        if await _validate_meal_choices(meals=meal_choices, user_preferences=user_preferences) or attempts > 3:
+        if (
+            await _validate_meal_choices(
+                meals=meal_choices, user_preferences=user_preferences
+            )
+            or attempts > 3
+        ):
             return meal_choices
 
 

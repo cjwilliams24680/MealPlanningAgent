@@ -21,6 +21,7 @@ app = FastAPI(
     },
 )
 
+
 class AppCookies(BaseModel):
     session_id: str | None = None
     conversation_id: str | None = None

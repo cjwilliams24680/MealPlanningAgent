@@ -79,7 +79,10 @@ async def create_meal_plan_brainstorm(
         side_ideas=sides,
     )
 
-    return await filter_meal_ideas(meal_ideas=meal_ideas, user_preferences=user_preferences)
+    return await filter_meal_ideas(
+        meal_ideas=meal_ideas, user_preferences=user_preferences
+    )
+
 
 @function_tool(output_type=PreparedDish)
 async def generate_meal_idea_with_ingredients(
