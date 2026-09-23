@@ -1,10 +1,8 @@
-import uuid
-
 import gradio as gr
 from agents import Runner, trace
 
-from .auth import UserMetadata
-from .legacy_auth import get_or_create_session, set_current_session
+from .auth import UserMetadata, create_session
+from .chat_history_store import get_or_create_history
 from .orchestration import ORCHESTRATION_AGENT
 from .theme import BISTRO_CSS, bistro_theme
 
@@ -12,15 +10,13 @@ from .theme import BISTRO_CSS, bistro_theme
 async def _chat(message, history, request: gr.Request):
     # request/session_hash is None for direct API calls and example caching;
     # give those an isolated session
-    session_hash = (request and request.session_hash) or str(uuid.uuid4())
-    user_session = get_or_create_session(session_hash)
-    set_current_session(user_session.state)
+    session_hash = (request and request.session_hash) or create_session()
     with trace("Meal Planning Agent"):
         return (
             await Runner.run(
                 starting_agent=ORCHESTRATION_AGENT,
                 input=message,
-                session=user_session.history,
+                session=get_or_create_history(conversation_id=session_hash),
                 context=UserMetadata(session_id=session_hash),
             )
         ).final_output

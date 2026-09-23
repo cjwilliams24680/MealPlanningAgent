@@ -1,5 +1,3 @@
-from dataclasses import dataclass, field
-
 from pydantic import BaseModel, Field
 
 
@@ -39,12 +37,3 @@ class UserPreferences(BaseModel):
         description="A paragraph of notes about any preferences that don't apply to one of the other fields.",
         examples=["Half of my meals should be meatless."],
     )
-
-
-@dataclass
-class SessionState:
-    """Mutable per-browser-session state. The ContextVar points at this object;
-    writes must mutate it (not ContextVar.set) so they're visible across the
-    asyncio task tree spawned by gather()."""
-
-    preferences: UserPreferences = field(default_factory=UserPreferences)
