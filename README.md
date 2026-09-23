@@ -7,8 +7,7 @@ list.
 
 [You can use it here](https://huggingface.co/spaces/cjwilliams24680/meal-planning-agent)
 
-Each browser session gets its own preferences and chat history. State is
-ephemeral: refreshing the page (or a Space restart) starts a fresh session.
+The browser will remember your preferences, but every refresh will clear the chat history.
 
 ## Required secrets / environment variables
 
