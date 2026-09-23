@@ -1,7 +1,7 @@
 # Meal Planning Agent
 
-A conversational meal-planning agent built on the OpenAI Agents SDK with a
-Gradio chat UI. It reviews your preferences, brainstorms and pairs meals,
+A conversational meal-planning agent built on the OpenAI Agents SDK with a FastAPI interface. 
+It reviews your preferences, brainstorms and pairs meals,
 writes recipes, and produces a final meal plan with a consolidated shopping
 list.
 
@@ -22,9 +22,9 @@ Optional: set `DEBUG_AGENT_LOGS=1` to enable verbose agent SDK logging
 ## Local development
 
 ```bash
-uv sync                    # install dependencies
-uv run fastapi dev ./src/meal_planning_agent/fast_api.py  # launch FastAPI app
-uv run ruff format .       # format
-uv run ruff check .        # lint
+uv sync                        # install dependencies
+uv run meal-planning-agent     # run FastAPI application
+uv run ruff format .           # format
+uv run ruff check .            # lint
 ```
 

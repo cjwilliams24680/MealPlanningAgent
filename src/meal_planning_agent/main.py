@@ -83,3 +83,9 @@ async def send_message(
             context=UserMetadata(session_id=cookies.session_id),
         )
         return {"response": result.final_output}
+
+
+def run():
+    import uvicorn
+
+    uvicorn.run("meal_planning_agent.main:app", host="0.0.0.0", port=8000, reload=True)
