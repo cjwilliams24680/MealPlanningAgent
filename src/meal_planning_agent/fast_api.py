@@ -1,8 +1,6 @@
-import os
 from typing import Annotated
 
 from agents import Runner, trace
-from dotenv import load_dotenv
 from fastapi import Body, Cookie, FastAPI, HTTPException, Response, status
 from pydantic import BaseModel
 
@@ -13,15 +11,6 @@ from meal_planning_agent.chat_history_store import (
 )
 from meal_planning_agent.orchestration import ORCHESTRATION_AGENT
 
-load_dotenv(override=True)
-
-# Verbose logging dumps every prompt/response to stdout — on a shared deployment
-# that means all users' conversations end up in the server logs, so opt in only.
-if os.getenv("DEBUG_AGENT_LOGS"):
-    from agents import enable_verbose_stdout_logging
-
-    enable_verbose_stdout_logging()
-
 app = FastAPI(
     title="Meal Planning Agent API",
     description="A meal planning agent that helps you plan your meals",
@@ -31,7 +20,6 @@ app = FastAPI(
         "url": "https://github.com/cjwilliams24680/meal-planning-agent",
     },
 )
-
 
 class AppCookies(BaseModel):
     session_id: str | None = None
