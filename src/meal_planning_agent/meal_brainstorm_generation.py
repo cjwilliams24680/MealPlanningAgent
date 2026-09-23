@@ -1,11 +1,13 @@
 import asyncio
 
-from agents import Agent, Runner, function_tool
+from agents import Agent, RunContextWrapper, Runner, function_tool
 
+from .auth import UserMetadata
 from .llm_models import get_random_model
 from .meal_brainstorm_validation import filter_meal_ideas
 from .meal_models import MealPlanIdeas, PreparedDish
-from .preferences_legacy import get_user_preferences
+from .preference_models import UserPreferences
+from .preferences_store import get_or_create_preferences
 from .seasonal_report import get_seasonal_report
 from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp
 
@@ -27,6 +29,7 @@ async def _generate_dish_ideas(
     number_of_dishes: int,
     dish_type: str,
     meals_to_avoid: list[str],
+    user_preferences: UserPreferences,
     additional_instructions: str = "",
 ) -> list[PreparedDish]:
     number_of_dishes = clamp(number_of_dishes, 1, 10)
@@ -34,10 +37,9 @@ async def _generate_dish_ideas(
     # to drop some of them during validation.
     number_of_ideas = number_of_dishes * 5
 
-    preferences = get_user_preferences()
     user_preferences_prompt = f"""
 Here is the user's preferences:
-{preferences}
+{user_preferences}
 """
 
     prompt = (
@@ -53,6 +55,7 @@ async def create_meal_plan_brainstorm(
     number_of_entrees: int,
     number_of_sides: int,
     meals_to_avoid: list[str],
+    user_preferences: UserPreferences,
     additional_instructions: str = "",
 ) -> MealPlanIdeas:
     entrees, sides = await asyncio.gather(
@@ -60,12 +63,14 @@ async def create_meal_plan_brainstorm(
             number_of_dishes=number_of_entrees,
             dish_type="entrees",
             meals_to_avoid=meals_to_avoid,
+            user_preferences=user_preferences,
             additional_instructions=additional_instructions,
         ),
         _generate_dish_ideas(
             number_of_dishes=number_of_sides,
             dish_type="sides",
             meals_to_avoid=meals_to_avoid,
+            user_preferences=user_preferences,
             additional_instructions=additional_instructions,
         ),
     )
@@ -74,11 +79,11 @@ async def create_meal_plan_brainstorm(
         side_ideas=sides,
     )
 
-    return await filter_meal_ideas(meal_ideas)
-
+    return await filter_meal_ideas(meal_ideas=meal_ideas, user_preferences=user_preferences)
 
 @function_tool(output_type=PreparedDish)
 async def generate_meal_idea_with_ingredients(
+    context: RunContextWrapper[UserMetadata],
     ingredients: list[str],
     previous_meal_ideas: list[str],
 ) -> PreparedDish:
@@ -96,19 +101,22 @@ async def generate_meal_idea_with_ingredients(
 Here is the list of ingredients:
 {ingredients}
 """
+    user_preferences = get_or_create_preferences(context.context.session_id)
     dish_ideas = await _generate_dish_ideas(
         number_of_dishes=1,
         dish_type="foods",
         meals_to_avoid=previous_meal_ideas,
+        user_preferences=user_preferences,
         additional_instructions=f"Use the following ingredients: {ingredients_prompt}",
     )
 
-    # Wrapping it in a MealPlanIdeas object as a little hack so that we can reuse the filter_meal_ideas validator.
+    # # Wrapping it in a MealPlanIdeas object as a little hack so that we can reuse the filter_meal_ideas validator.
     validated_dish_ideas = await filter_meal_ideas(
-        MealPlanIdeas(
+        meal_ideas=MealPlanIdeas(
             entree_ideas=dish_ideas,
             side_ideas=[],
-        )
+        ),
+        user_preferences=user_preferences,
     )
 
     return validated_dish_ideas.entree_ideas[0]

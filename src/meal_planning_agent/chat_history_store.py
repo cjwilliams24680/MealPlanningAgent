@@ -9,6 +9,7 @@ _chat_history_store: dict[str, SQLiteSession] = {}
 def create_conversation() -> str:
     return str(uuid.uuid4())
 
+
 def get_or_create_history(conversation_id: str):
     if not conversation_id:
         raise ValueError("No conversation id was passed")

@@ -1,7 +1,9 @@
-from agents import function_tool
+from agents import RunContextWrapper, function_tool
 from pydantic import BaseModel, Field
 
+from .auth import UserMetadata
 from .meal_models import PreparedDish
+from .preferences_store import get_or_create_preferences
 from .recipe_generation import generate_recipe
 from .recipe_models import Recipe
 from .shopping_list import generate_ingredients_markdown, sort_ingredients
@@ -23,6 +25,7 @@ def _write_shopping_list(recipe: Recipe) -> str:
 
 @function_tool(output_type=SingleDishWriteup)
 async def generate_writeup_for_single_dish(
+    wrapper: RunContextWrapper[UserMetadata],
     requested_dish: PreparedDish,
 ) -> SingleDishWriteup:
     """
@@ -33,7 +36,9 @@ async def generate_writeup_for_single_dish(
     Returns:
         A SingleDishWriteup object containing the recipe_markdown and shopping_list_markdown for the requested dish.
     """
-    recipe = await generate_recipe(requested_dish)
+    recipe = await generate_recipe(
+        requested_dish, get_or_create_preferences(wrapper.context.session_id)
+    )
     writeup = SingleDishWriteup(
         recipe_markdown=recipe.cooking_instructions,
         shopping_list_markdown=_write_shopping_list(recipe=recipe),

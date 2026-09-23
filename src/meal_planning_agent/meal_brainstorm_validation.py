@@ -2,7 +2,7 @@ from agents import Agent, Runner
 
 from .llm_models import DEFAULT_MODEL
 from .meal_models import MealPlanIdeas, PreparedDish
-from .preferences_legacy import get_user_preferences
+from .preference_models import UserPreferences
 from .utils import BASE_SYSTEM_INSTRUCTIONS, to_markdown_list
 
 _MEAL_VALIDATION_INSTRUCTIONS = f"""
@@ -26,14 +26,17 @@ def _filter_out_flagged_dishes(
     return [dish for dish in dishes if dish.name not in flagged_names]
 
 
-async def filter_meal_ideas(meal_ideas: MealPlanIdeas) -> MealPlanIdeas:
+async def filter_meal_ideas(
+    meal_ideas: MealPlanIdeas,
+    user_preferences: UserPreferences,
+) -> MealPlanIdeas:
     all_dishes = meal_ideas.entree_ideas + meal_ideas.side_ideas
     prompt = f"""
 You have a list of foods that have been generated as candidates for the user's meal plan:
 {to_markdown_list([dish.name for dish in all_dishes])}
 
 Here is the user's meal plan preferences:
-{get_user_preferences()}
+{user_preferences}
 
 Your job is to identify and return the exact dish names from the list above
 that are poor candidates based on the user's preferences.

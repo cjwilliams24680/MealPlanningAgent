@@ -45,7 +45,8 @@ def _sanitize_user_preferences(raw: UserPreferences) -> UserPreferences:
 
 @function_tool
 def set_user_preferences(
-    wrapper: RunContextWrapper[UserMetadata], update: UserPreferences
+    wrapper: RunContextWrapper[UserMetadata],
+    update: UserPreferences,
 ):
     """Sets the user's saved preferences."""
     upsert_preferences(wrapper.context.session_id, _sanitize_user_preferences(update))

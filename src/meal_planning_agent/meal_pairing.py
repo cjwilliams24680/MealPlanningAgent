@@ -1,12 +1,14 @@
 import random
 
-from agents import Agent, Runner, function_tool
+from agents import Agent, RunContextWrapper, Runner, function_tool
 from pydantic import BaseModel, Field
 
+from .auth import UserMetadata
 from .llm_models import DEFAULT_MODEL, GEMINI_MODEL
 from .meal_brainstorm_generation import create_meal_plan_brainstorm
 from .meal_models import MealPlanIdeas, PreparedDish
-from .preferences_legacy import get_user_preferences
+from .preference_models import UserPreferences
+from .preferences_store import get_or_create_preferences
 from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp, to_markdown_list
 
 
@@ -41,23 +43,27 @@ _MEAL_CHOICE_VALIDATION_AGENT = Agent(
 
 
 async def _generate_meals(
-    brainstorm_results: MealPlanIdeas, number_of_meals: int
+    brainstorm_results: MealPlanIdeas,
+    number_of_meals: int,
+    user_preferences: UserPreferences,
 ) -> list[MealPairing]:
     attempts = 0
     while True:
         attempts += 1
         entree_choices = await _pick_entrees(
-            number_of_meals=number_of_meals, entrees=brainstorm_results.entree_ideas
+            number_of_meals=number_of_meals,
+            entrees=brainstorm_results.entree_ideas,
+            user_preferences=user_preferences,
         )
         meal_choices = await _pair_with_sides(
             entrees=entree_choices, sides=brainstorm_results.side_ideas
         )
-        if await _validate_meal_choices(meal_choices) or attempts > 3:
+        if await _validate_meal_choices(meals=meal_choices, user_preferences=user_preferences) or attempts > 3:
             return meal_choices
 
 
 async def _pick_entrees(
-    number_of_meals: int, entrees: list[PreparedDish]
+    number_of_meals: int, entrees: list[PreparedDish], user_preferences: UserPreferences
 ) -> list[PreparedDish]:
     # Shuffle to make meal selection more unpredictable
     shuffled_entrees = random.sample(entrees, len(entrees))
@@ -68,7 +74,7 @@ You can choose from the following list:
 {to_markdown_list(shuffled_entrees)}
 
 Make sure that your final selection conforms to the user's preferences:
-{get_user_preferences()}
+{user_preferences}
 
 Make sure that your {number_of_meals} selection(s) are different categories from each other.
 """
@@ -104,7 +110,10 @@ The entree and side should NEVER be the same dish.
     return (await Runner.run(_PAIRING_AGENT, prompt)).final_output
 
 
-async def _validate_meal_choices(meals: list[MealPairing]) -> bool:
+async def _validate_meal_choices(
+    meals: list[MealPairing],
+    user_preferences: UserPreferences,
+) -> bool:
     prompt = f"""
 You're writing a meal plan for the user.
 
@@ -112,13 +121,15 @@ You've picked meal(s) for the meal plan':
 {to_markdown_list(meals)}
 
 Determine if that list conforms to the user's preferences:
-{get_user_preferences()}
+{user_preferences}
 """
     return (await Runner.run(_MEAL_CHOICE_VALIDATION_AGENT, prompt)).final_output
 
 
 async def _generate_meal_pairings(
-    number_of_meals: int, meals_to_avoid: list[str] | None = None
+    number_of_meals: int,
+    user_preferences: UserPreferences,
+    meals_to_avoid: list[str] | None = None,
 ) -> list[MealPairing]:
     if meals_to_avoid is None:
         meals_to_avoid = []
@@ -127,14 +138,19 @@ async def _generate_meal_pairings(
         number_of_entrees=number_of_meals,
         number_of_sides=number_of_meals,
         meals_to_avoid=meals_to_avoid,
+        user_preferences=user_preferences,
     )
     return await _generate_meals(
-        brainstorm_results=brainstorm_results, number_of_meals=number_of_meals
+        brainstorm_results=brainstorm_results,
+        number_of_meals=number_of_meals,
+        user_preferences=user_preferences,
     )
 
 
 @function_tool(output_type=MealPairingsResult)
-async def generate_initial_meal_ideas_for_meal_plan() -> MealPairingsResult:
+async def generate_initial_meal_ideas_for_meal_plan(
+    wrapper: RunContextWrapper[UserMetadata],
+) -> MealPairingsResult:
     """
     Generates the number of meal pairings for the user's meal plan based on the
     number stated in their preferences.
@@ -142,14 +158,19 @@ async def generate_initial_meal_ideas_for_meal_plan() -> MealPairingsResult:
     Returns:
         A list of meal pairings for the user to review.
     """
-    number_of_meals = get_user_preferences().number_of_meals_per_meal_plan
-    meal_pairings = await _generate_meal_pairings(number_of_meals=number_of_meals)
+    user_preferences = get_or_create_preferences(wrapper.context.session_id)
+    meal_pairings = await _generate_meal_pairings(
+        number_of_meals=user_preferences.number_of_meals_per_meal_plan,
+        user_preferences=user_preferences,
+    )
     return MealPairingsResult(meal_pairings=meal_pairings)
 
 
 @function_tool(output_type=MealPairingsResult)
 async def generate_meal_idea_replacements(
-    number_of_meals_to_replace: int, previous_meal_ideas: list[str]
+    wrapper: RunContextWrapper[UserMetadata],
+    number_of_meals_to_replace: int,
+    previous_meal_ideas: list[str],
 ) -> MealPairingsResult:
     """
     Generates an explicit number meal pairings. Used to replace any meal pairings that the user rejects.
@@ -161,6 +182,8 @@ async def generate_meal_idea_replacements(
         A list of meal pairings for the user to review
     """
     meal_pairings = await _generate_meal_pairings(
-        number_of_meals=number_of_meals_to_replace, meals_to_avoid=previous_meal_ideas
+        number_of_meals=number_of_meals_to_replace,
+        meals_to_avoid=previous_meal_ideas,
+        user_preferences=get_or_create_preferences(wrapper.context.session_id),
     )
     return MealPairingsResult(meal_pairings=meal_pairings)

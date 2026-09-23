@@ -1,8 +1,10 @@
-from agents import Agent, Runner, function_tool
+from agents import Agent, RunContextWrapper, Runner, function_tool
 from pydantic import BaseModel, Field
 
+from .auth import UserMetadata
 from .llm_models import DEFAULT_MODEL
 from .meal_pairing import MealPairing
+from .preferences_store import get_or_create_preferences
 from .recipe_generation import generate_recipes
 from .recipe_models import MealPlanItem
 from .shopping_list import (
@@ -48,7 +50,10 @@ def _write_shopping_list(meals: list[MealPlanItem]) -> str:
 
 
 @function_tool(output_type=MealPlan)
-async def generate_meal_plan(meal_pairings: list[MealPairing]) -> MealPlan:
+async def generate_meal_plan(
+    wrapper: RunContextWrapper[UserMetadata],
+    meal_pairings: list[MealPairing],
+) -> MealPlan:
     """
     Generates a meal plan with a shopping list from a list of meal pairings.
 
@@ -57,7 +62,9 @@ async def generate_meal_plan(meal_pairings: list[MealPairing]) -> MealPlan:
     Returns:
         A meal plan with a shopping list.
     """
-    meal_plan_items = await generate_recipes(meal_pairings)
+    meal_plan_items = await generate_recipes(
+        meal_pairings, get_or_create_preferences(wrapper.context.session_id)
+    )
     meal_plan = MealPlan(
         plan_markdown=await _write_meal_plan(meals=meal_plan_items),
         aggregated_shopping_list_markdown=_write_shopping_list(meals=meal_plan_items),

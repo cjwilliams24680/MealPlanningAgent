@@ -32,20 +32,25 @@ app = FastAPI(
     },
 )
 
+
 class AppCookies(BaseModel):
     session_id: str | None = None
     conversation_id: str | None = None
 
+
 class SendMessageRequest(BaseModel):
     message: str = ""
+
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def read_root():
     return {"status": "healthy"}
 
+
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def health_check():
     return {"status": "healthy"}
+
 
 @app.get("/initialize", status_code=status.HTTP_200_OK)
 async def initialize(
@@ -61,17 +66,24 @@ async def initialize(
 
     return {"message": "Cookies updated successfully"}
 
+
 @app.post("/send_message", status_code=status.HTTP_200_OK)
 async def send_message(
     cookies: Annotated[AppCookies, Cookie()],
     body: Annotated[SendMessageRequest, Body()],
 ):
     if not cookies.session_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Session not specified")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Session not specified"
+        )
     if not cookies.conversation_id:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Conversation not specified")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Conversation not specified"
+        )
     if not body.message:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Message is not provided")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Message is not provided"
+        )
 
     session = get_or_create_history(conversation_id=cookies.conversation_id)
 

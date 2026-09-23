@@ -2,7 +2,7 @@ from agents import Agent, Runner
 
 from .llm_models import GEMINI_MODEL, HIGH_EFFORT_MODEL
 from .meal_models import PreparedDish
-from .preferences_legacy import get_user_preferences
+from .preference_models import UserPreferences
 from .recipe_models import Recipe
 from .utils import BASE_SYSTEM_INSTRUCTIONS
 
@@ -20,10 +20,11 @@ _RECIPE_VALIDATION_AGENT = Agent(
 )
 
 
-async def adjust_for_servings_count_if_necessary(recipe: Recipe) -> Recipe:
-    target_servings_portions = (
-        get_user_preferences().number_of_servings_portions_per_meal
-    )
+async def adjust_for_servings_count_if_necessary(
+    recipe: Recipe,
+    user_preferences: UserPreferences,
+) -> Recipe:
+    target_servings_portions = user_preferences.number_of_servings_portions_per_meal
     if recipe.number_of_servings_portions == target_servings_portions:
         return recipe
     prompt = f"""
@@ -38,7 +39,11 @@ Please adjust the recipe (seen below) so that it makes the correct number of ser
     return (await Runner.run(_RECIPE_ADJUSTMENT_AGENT, prompt)).final_output
 
 
-async def validate_recipe(dish: PreparedDish, recipe: Recipe) -> bool:
+async def validate_recipe(
+    dish: PreparedDish,
+    recipe: Recipe,
+    user_preferences: UserPreferences,
+) -> bool:
     prompt = f"""
 You're writing a meal plan for the user and they've selected the following dish:
 {dish.name}
@@ -47,6 +52,6 @@ You've written the following recipe for that dish:
 {recipe}
 
 Return true if the recipe is simple and conforms to the user's preferences:
-{get_user_preferences()}
+{user_preferences}
 """
     return (await Runner.run(_RECIPE_VALIDATION_AGENT, prompt)).final_output
