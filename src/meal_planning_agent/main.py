@@ -2,6 +2,7 @@ from typing import Annotated
 
 from agents import Runner, trace
 from fastapi import Body, Cookie, FastAPI, HTTPException, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from meal_planning_agent.auth import UserMetadata, create_session
@@ -20,7 +21,14 @@ app = FastAPI(
         "url": "https://github.com/cjwilliams24680/meal-planning-agent",
     },
 )
-
+# TODO make this restrictive in production
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class AppCookies(BaseModel):
     session_id: str | None = None
