@@ -1,0 +1,54 @@
+# .dockerignore
+#
+# Controls what gets sent to the Docker daemon as the "build context" before
+# the Dockerfile even runs. Keeping this list tight makes `docker build`
+# faster (less to upload/hash) and stops secrets or dev-only junk from ever
+# being copyable into an image layer by an accidental `COPY . .`.
+
+# --- Version control ---
+# The Dockerfile doesn't need git history or git's own config to build the app.
+.git
+.gitignore
+
+# --- Secrets ---
+# Never let real credentials end up inside an image layer - anyone who pulls
+# the image (or a layer cache) could extract them. Env vars belong at
+# `docker run` time (e.g. `--env-file .env`), not baked into the build.
+.env
+.env.*
+# ...except a placeholder/example file, which is safe to ship as documentation.
+!.env.example
+
+# --- Python build/runtime artifacts ---
+# Regenerated automatically; shipping stale host-compiled bytecode risks
+# version/platform mismatches with the image's own Python interpreter.
+__pycache__/
+*.py[cod]
+.ruff_cache/
+
+# --- Local virtual environment ---
+# This is rebuilt from scratch inside the image via `uv sync`. The host venv
+# may contain binaries compiled for the host's OS/architecture (e.g. macOS),
+# which would silently break on the Linux base image.
+.venv/
+
+# --- Dev-only content ---
+# Notebook used for ad hoc prompt experimentation (see pyproject.toml's ruff
+# `extend-exclude`) - not imported by the app, no reason to ship it.
+notebooks/
+.ipynb_checkpoints/
+
+# --- Editor / IDE metadata ---
+# Local tooling config, irrelevant to the running container.
+.vscode/
+.idea/
+.cursorignore
+
+# --- OS cruft ---
+.DS_Store
+
+# --- Docker metadata itself ---
+# Changing these shouldn't bust the build cache of earlier COPY layers, and
+# the image has no use for its own build recipe at runtime.
+Dockerfile
+.dockerignore

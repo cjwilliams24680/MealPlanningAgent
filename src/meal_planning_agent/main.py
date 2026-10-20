@@ -12,6 +12,7 @@ from meal_planning_agent.chat_history_store import (
 )
 from meal_planning_agent.orchestration import ORCHESTRATION_AGENT
 
+# TODO start using APIRouter when I add more endpoints
 app = FastAPI(
     title="Meal Planning Agent API",
     description="A meal planning agent that helps you plan your meals",
@@ -29,6 +30,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 class AppCookies(BaseModel):
     session_id: str | None = None
@@ -95,6 +97,13 @@ async def send_message(
 
 
 def run():
+    import os
+
     import uvicorn
 
-    uvicorn.run("meal_planning_agent.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "meal_planning_agent.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=os.getenv("UVICORN_RELOAD", "false").lower() == "true",
+    )
