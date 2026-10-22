@@ -27,3 +27,14 @@ uv run ruff format .           # format
 uv run ruff check .            # lint
 ```
 
+
+
+## Run With Docker
+
+```bash
+# Build Docker image locally
+docker build -t cjwilliams24680/meal-planning-agent:0.1.0 .
+
+# Run local Docker compose file
+docker compose up
+```
