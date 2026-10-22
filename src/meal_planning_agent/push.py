@@ -1,10 +1,10 @@
 import requests
 from agents import function_tool
 
-from .utils import assertKeyExists
+from .utils import assert_key_exists
 
-_PUSHOVER_USER = assertKeyExists("PUSHOVER_USER")
-_PUSHOVER_TOKEN = assertKeyExists("PUSHOVER_TOKEN")
+_PUSHOVER_USER = assert_key_exists("PUSHOVER_USER")
+_PUSHOVER_TOKEN = assert_key_exists("PUSHOVER_TOKEN")
 _PUSHOVER_URL = "https://api.pushover.net/1/messages.json"
 
 

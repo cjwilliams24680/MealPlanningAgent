@@ -1,28 +1,28 @@
 from agents import RunContextWrapper, function_tool
 
 from .auth import UserMetadata
-from .preference_models import UserPreferences
+from .user_preferences import UserPreferencesBase
 from .utils import clamp
 
 # Iterative solution until I add databases
-_preferences_store: dict[str, UserPreferences] = {}
+_preferences_store: dict[str, UserPreferencesBase] = {}
 
 
-def get_or_create_preferences(session_id: str) -> UserPreferences:
+async def get_or_create_preferences(session_id: str) -> UserPreferencesBase:
     if not session_id:
         raise ValueError("No session id was passed")
 
     history = _preferences_store.get(session_id)
     if history is None:
-        history = UserPreferences()
+        history = UserPreferencesBase()
         upsert_preferences(session_id, history)
 
     return history
 
 
-def upsert_preferences(
+async def upsert_preferences(
     session_id: str,
-    preferences: UserPreferences,
+    preferences: UserPreferencesBase,
 ):
     if not session_id:
         raise ValueError("No session id was passed")
@@ -30,7 +30,7 @@ def upsert_preferences(
     _preferences_store[session_id] = preferences
 
 
-def _sanitize_user_preferences(raw: UserPreferences) -> UserPreferences:
+def _sanitize_user_preferences(raw: UserPreferencesBase) -> UserPreferencesBase:
     return raw.model_copy(
         update={
             "number_of_meals_per_meal_plan": clamp(
@@ -44,17 +44,17 @@ def _sanitize_user_preferences(raw: UserPreferences) -> UserPreferences:
 
 
 @function_tool
-def set_user_preferences(
+async def set_user_preferences(
     wrapper: RunContextWrapper[UserMetadata],
-    update: UserPreferences,
+    update: UserPreferencesBase,
 ):
     """Sets the user's saved preferences."""
     upsert_preferences(wrapper.context.session_id, _sanitize_user_preferences(update))
 
 
 @function_tool
-def get_user_preferences_tool(
+async def get_user_preferences_tool(
     wrapper: RunContextWrapper[UserMetadata],
-) -> UserPreferences:
+) -> UserPreferencesBase:
     """Returns the user's saved preferences."""
     return get_or_create_preferences(wrapper.context.session_id)

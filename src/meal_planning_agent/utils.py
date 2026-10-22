@@ -6,7 +6,7 @@ You are an expert on simple meals that require minimal amounts of preparation, r
 """
 
 
-def assertKeyExists(key: str) -> str:
+def assert_key_exists(key: str) -> str:
     value = os.getenv(key)
     if value:
         return value
@@ -22,3 +22,7 @@ def to_markdown_list(data: list[any], bullet: str = "-"):
 
 def clamp(n, min_n, max_n):
     return max(min_n, min(n, max_n))
+
+
+def enable_debug_logging() -> bool:
+    return os.getenv("DEBUG", "False").lower() in ("true", "1", "t")

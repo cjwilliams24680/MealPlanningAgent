@@ -5,9 +5,9 @@ from agents import Agent, Runner
 from .llm_models import BALANCED_MODEL
 from .meal_models import PreparedDish
 from .meal_pairing import MealPairing
-from .preference_models import UserPreferences
 from .recipe_models import MealPlanItem, Recipe
 from .recipe_validation import adjust_for_servings_count_if_necessary, validate_recipe
+from .user_preferences import UserPreferencesBase
 from .utils import BASE_SYSTEM_INSTRUCTIONS
 
 _RECIPE_GENERATION_AGENT = Agent(
@@ -19,7 +19,7 @@ _RECIPE_GENERATION_AGENT = Agent(
 
 
 async def generate_recipes(
-    meals: list[MealPairing], user_preferences: UserPreferences
+    meals: list[MealPairing], user_preferences: UserPreferencesBase
 ) -> list[MealPlanItem]:
     tasks = [_generate_recipes_for_meal(item, user_preferences) for item in meals]
     meal_plan_items = await asyncio.gather(*tasks)
@@ -27,7 +27,7 @@ async def generate_recipes(
 
 
 async def _generate_recipes_for_meal(
-    meal: MealPairing, user_preferences: UserPreferences
+    meal: MealPairing, user_preferences: UserPreferencesBase
 ) -> MealPlanItem:
     entree_recipe, side_recipe = await asyncio.gather(
         generate_recipe(meal.entree, user_preferences),
@@ -42,7 +42,7 @@ async def _generate_recipes_for_meal(
 
 
 async def generate_recipe(
-    dish: PreparedDish, user_preferences: UserPreferences
+    dish: PreparedDish, user_preferences: UserPreferencesBase
 ) -> Recipe:
     prompt = f"""
 The user has selected the following meal for their meal plan:

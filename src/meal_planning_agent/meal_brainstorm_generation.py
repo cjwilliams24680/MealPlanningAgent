@@ -6,9 +6,9 @@ from .auth import UserMetadata
 from .llm_models import get_random_model
 from .meal_brainstorm_validation import filter_meal_ideas
 from .meal_models import MealPlanIdeas, PreparedDish
-from .preference_models import UserPreferences
 from .preferences_store import get_or_create_preferences
 from .seasonal_report import get_seasonal_report
+from .user_preferences import UserPreferencesBase
 from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp
 
 _BRAINSTORM_INSTRUCTIONS = f"""
@@ -29,7 +29,7 @@ async def _generate_dish_ideas(
     number_of_dishes: int,
     dish_type: str,
     meals_to_avoid: list[str],
-    user_preferences: UserPreferences,
+    user_preferences: UserPreferencesBase,
     additional_instructions: str = "",
 ) -> list[PreparedDish]:
     number_of_dishes = clamp(number_of_dishes, 1, 10)
@@ -55,7 +55,7 @@ async def create_meal_plan_brainstorm(
     number_of_entrees: int,
     number_of_sides: int,
     meals_to_avoid: list[str],
-    user_preferences: UserPreferences,
+    user_preferences: UserPreferencesBase,
     additional_instructions: str = "",
 ) -> MealPlanIdeas:
     entrees, sides = await asyncio.gather(

@@ -52,3 +52,4 @@ notebooks/
 # the image has no use for its own build recipe at runtime.
 Dockerfile
 .dockerignore
+docker-compose.yaml

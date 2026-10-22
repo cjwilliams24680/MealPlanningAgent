@@ -2,7 +2,7 @@ from agents import Agent, Runner
 
 from .llm_models import DEFAULT_MODEL
 from .meal_models import MealPlanIdeas, PreparedDish
-from .preference_models import UserPreferences
+from .user_preferences import UserPreferencesBase
 from .utils import BASE_SYSTEM_INSTRUCTIONS, to_markdown_list
 
 _MEAL_VALIDATION_INSTRUCTIONS = f"""
@@ -28,7 +28,7 @@ def _filter_out_flagged_dishes(
 
 async def filter_meal_ideas(
     meal_ideas: MealPlanIdeas,
-    user_preferences: UserPreferences,
+    user_preferences: UserPreferencesBase,
 ) -> MealPlanIdeas:
     all_dishes = meal_ideas.entree_ideas + meal_ideas.side_ideas
     prompt = f"""

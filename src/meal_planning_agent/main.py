@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import Annotated
 
 from agents import Runner, trace
@@ -11,14 +12,21 @@ from meal_planning_agent.chat_history_store import (
     get_or_create_history,
 )
 from meal_planning_agent.orchestration import ORCHESTRATION_AGENT
+from meal_planning_agent.users_database import create_db_and_tables
 
-# TODO start using APIRouter when I add more endpoints
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_db_and_tables()
+    yield
+
+
 app = FastAPI(
     title="Meal Planning Agent API",
     description="A meal planning agent that helps you plan your meals",
     version="0.1.0",
     contact={
-        "name": "Chris",
+        "name": "Chris Williams",
         "url": "https://github.com/cjwilliams24680/meal-planning-agent",
     },
 )

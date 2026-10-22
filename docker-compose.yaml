@@ -7,10 +7,10 @@ services:
     hostname: agent-api
     image: cjwilliams24680/meal-planning-agent:0.1.0
     depends_on:
-      messages-db:
+      conversations-db:
         condition: service_healthy
         required: true
-      preferences-db:
+      users-db:
         condition: service_healthy
         required: true
         restart: true
@@ -20,22 +20,18 @@ services:
       - GROK_API_KEY=${GROK_API_KEY}
       - PUSHOVER_USER=${PUSHOVER_USER}
       - PUSHOVER_TOKEN=${PUSHOVER_TOKEN}
-      - DEBUG_AGENT_LOGS=${DEBUG_AGENT_LOGS}
-      - MESSAGES_DB_ENDPOINT=messages-db:8000
-      - MESSAGES_DB_NAME=messages
-      - MESSAGES_DB_USERNAME=messages_user
-      - MESSAGES_DB_PASSWORD=${DB_PASSWORD}
-      - PREFERENCES_DB_ENDPOINT=preferences-db:5432
-      - PREFERENCES_DB_NAME=preferences
-      - PREFERENCES_DB_USERNAME=preferences_user
-      - PREFERENCES_DB_PASSWORD=${DB_PASSWORD}
+      - CONVERSATIONS_DB_ENDPOINT=conversations-db:8000
+      - CONVERSATIONS_DB_NAME=conversations
+      - CONVERSATIONS_DB_USERNAME=conversations_user
+      - CONVERSATIONS_DB_PASSWORD=${DB_PASSWORD}
+      - USERS_DB_URL=users_user:${DB_PASSWORD}@users-db:5432/users
     ports:
       - mode: ingress
         protocol: tcp
         published: 8080 # this is the public facing port
         target: 8000 # this is the port that the application listens on. docker maps it to the published port
-  messages-db:
-    hostname: messages-db
+  conversations-db:
+    hostname: conversations-db
     image: amazon/dynamodb-local:3.3.2
     healthcheck:
       interval: 5s
@@ -47,20 +43,20 @@ services:
     read_only: true
     restart: always
     ports: []
-  preferences-db:
-    hostname: preferences-db
+  users-db:
+    hostname: users-db
     image: postgres:18.6
     environment:
       - reschedule=on-node-failure
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=preferences
-      - POSTGRES_USER=preferences_user
+      - POSTGRES_DB=users
+      - POSTGRES_USER=users_user
     healthcheck:
       interval: 10s
       retries: 30
       test:
         - CMD-SHELL
-        - pg_isready -d preferences -U preferences_user
+        - pg_isready -d users -U users_user
       timeout: 5s
     ports: []
     

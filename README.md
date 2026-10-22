@@ -15,7 +15,7 @@ The browser will remember your preferences, but every refresh will clear the cha
 - `GOOGLE_API_KEY`
 - `GROK_API_KEY`
 
-Optional: set `DEBUG_AGENT_LOGS=1` to enable verbose agent SDK logging
+Optional: set `DEBUG=1` to enable verbose agent SDK logging
 (dumps full prompts/responses to stdout — leave off in shared deployments).
 
 ## Local development
@@ -35,6 +35,9 @@ uv run ruff check .            # lint
 # Build Docker image locally
 docker build -t cjwilliams24680/meal-planning-agent:0.1.0 .
 
-# Run local Docker compose file
+# Run Docker image locally in isolation
+docker run -p 8080:8000 --env-file .env cjwilliams24680/meal-planning-agent:0.1.0
+
+# Use Docker Compose to run the image with a local environment
 docker compose up
 ```

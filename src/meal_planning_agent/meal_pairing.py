@@ -7,8 +7,8 @@ from .auth import UserMetadata
 from .llm_models import DEFAULT_MODEL, GEMINI_MODEL
 from .meal_brainstorm_generation import create_meal_plan_brainstorm
 from .meal_models import MealPlanIdeas, PreparedDish
-from .preference_models import UserPreferences
 from .preferences_store import get_or_create_preferences
+from .user_preferences import UserPreferencesBase
 from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp, to_markdown_list
 
 
@@ -45,7 +45,7 @@ _MEAL_CHOICE_VALIDATION_AGENT = Agent(
 async def _generate_meals(
     brainstorm_results: MealPlanIdeas,
     number_of_meals: int,
-    user_preferences: UserPreferences,
+    user_preferences: UserPreferencesBase,
 ) -> list[MealPairing]:
     attempts = 0
     while True:
@@ -68,7 +68,9 @@ async def _generate_meals(
 
 
 async def _pick_entrees(
-    number_of_meals: int, entrees: list[PreparedDish], user_preferences: UserPreferences
+    number_of_meals: int,
+    entrees: list[PreparedDish],
+    user_preferences: UserPreferencesBase,
 ) -> list[PreparedDish]:
     # Shuffle to make meal selection more unpredictable
     shuffled_entrees = random.sample(entrees, len(entrees))
@@ -117,7 +119,7 @@ The entree and side should NEVER be the same dish.
 
 async def _validate_meal_choices(
     meals: list[MealPairing],
-    user_preferences: UserPreferences,
+    user_preferences: UserPreferencesBase,
 ) -> bool:
     prompt = f"""
 You're writing a meal plan for the user.
@@ -133,7 +135,7 @@ Determine if that list conforms to the user's preferences:
 
 async def _generate_meal_pairings(
     number_of_meals: int,
-    user_preferences: UserPreferences,
+    user_preferences: UserPreferencesBase,
     meals_to_avoid: list[str] | None = None,
 ) -> list[MealPairing]:
     if meals_to_avoid is None:

@@ -26,7 +26,7 @@ Python 3.12 is required (`.python-version`, `requires-python = ">=3.12"`).
 ### Required environment variables
 
 Set in `.env` (see `.env` for the full list): `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `GROK_API_KEY`,
-`PUSHOVER_USER`, `PUSHOVER_TOKEN`. Optional: `DEBUG_AGENT_LOGS=1` enables verbose Agents SDK logging
+`PUSHOVER_USER`, `PUSHOVER_TOKEN`. Optional: `DEBUG=True` enables verbose Agents SDK logging
 (dumps full prompts/responses — keep off in shared deployments). `assertKeyExists` in `utils.py` raises
 at import time if a required key is missing, so most modules that read env vars will fail fast on
 startup rather than at call time.
