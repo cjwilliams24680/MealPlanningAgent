@@ -2,8 +2,8 @@ from agents import Agent, Runner
 
 from .llm_models import GEMINI_MODEL, HIGH_EFFORT_MODEL
 from .meal_models import PreparedDish
+from .preferences.models import UserPreferencesBase
 from .recipe_models import Recipe
-from .user_preferences import UserPreferencesBase
 from .utils import BASE_SYSTEM_INSTRUCTIONS
 
 _RECIPE_ADJUSTMENT_AGENT = Agent(

@@ -1,7 +1,7 @@
 from agents import RunContextWrapper, function_tool
 
 from .auth import UserMetadata
-from .user_preferences import UserPreferencesBase
+from .preferences.models import UserPreferencesBase
 from .utils import clamp
 
 # Iterative solution until I add databases

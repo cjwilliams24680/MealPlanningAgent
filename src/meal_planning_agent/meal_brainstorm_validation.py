@@ -2,7 +2,7 @@ from agents import Agent, Runner
 
 from .llm_models import DEFAULT_MODEL
 from .meal_models import MealPlanIdeas, PreparedDish
-from .user_preferences import UserPreferencesBase
+from .preferences.models import UserPreferencesBase
 from .utils import BASE_SYSTEM_INSTRUCTIONS, to_markdown_list
 
 _MEAL_VALIDATION_INSTRUCTIONS = f"""

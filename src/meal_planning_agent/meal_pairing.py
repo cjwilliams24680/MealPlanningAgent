@@ -7,8 +7,8 @@ from .auth import UserMetadata
 from .llm_models import DEFAULT_MODEL, GEMINI_MODEL
 from .meal_brainstorm_generation import create_meal_plan_brainstorm
 from .meal_models import MealPlanIdeas, PreparedDish
+from .preferences.models import UserPreferencesBase
 from .preferences_store import get_or_create_preferences
-from .user_preferences import UserPreferencesBase
 from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp, to_markdown_list
 
 
