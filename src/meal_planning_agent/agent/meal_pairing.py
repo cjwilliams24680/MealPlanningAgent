@@ -3,13 +3,15 @@ import random
 from agents import Agent, RunContextWrapper, Runner, function_tool
 from pydantic import BaseModel, Field
 
-from .auth import UserMetadata
-from .llm_models import DEFAULT_MODEL, GEMINI_MODEL
-from .meal_brainstorm_generation import create_meal_plan_brainstorm
-from .meal_models import MealPlanIdeas, PreparedDish
-from .preferences.models import UserPreferencesBase
-from .preferences_store import get_or_create_preferences
-from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp, to_markdown_list
+from meal_planning_agent.agent.llm_models import DEFAULT_MODEL, GEMINI_MODEL
+from meal_planning_agent.agent.meal_brainstorm_generation import (
+    create_meal_plan_brainstorm,
+)
+from meal_planning_agent.agent.meal_models import MealPlanIdeas, PreparedDish
+from meal_planning_agent.auth import UserMetadata
+from meal_planning_agent.preferences.models import UserPreferencesBase
+from meal_planning_agent.preferences_store import get_or_create_preferences
+from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS, clamp, to_markdown_list
 
 
 class MealPairing(BaseModel):

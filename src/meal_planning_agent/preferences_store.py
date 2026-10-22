@@ -1,8 +1,8 @@
 from agents import RunContextWrapper, function_tool
 
-from .auth import UserMetadata
-from .preferences.models import UserPreferencesBase
-from .utils import clamp
+from meal_planning_agent.auth import UserMetadata
+from meal_planning_agent.preferences.models import UserPreferencesBase
+from meal_planning_agent.utils import clamp
 
 # Iterative solution until I add databases
 _preferences_store: dict[str, UserPreferencesBase] = {}

@@ -1,10 +1,10 @@
 from agents import Agent, Runner
 
-from .llm_models import GEMINI_MODEL, HIGH_EFFORT_MODEL
-from .meal_models import PreparedDish
-from .preferences.models import UserPreferencesBase
-from .recipe_models import Recipe
-from .utils import BASE_SYSTEM_INSTRUCTIONS
+from meal_planning_agent.agent.llm_models import GEMINI_MODEL, HIGH_EFFORT_MODEL
+from meal_planning_agent.agent.meal_models import PreparedDish
+from meal_planning_agent.agent.recipe_models import Recipe
+from meal_planning_agent.preferences.models import UserPreferencesBase
+from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS
 
 _RECIPE_ADJUSTMENT_AGENT = Agent(
     name="Recipe Adjustment Agent",

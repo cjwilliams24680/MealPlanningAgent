@@ -1,18 +1,18 @@
 from agents import Agent, RunContextWrapper, Runner, function_tool
 from pydantic import BaseModel, Field
 
-from .auth import UserMetadata
-from .llm_models import DEFAULT_MODEL
-from .meal_pairing import MealPairing
-from .preferences_store import get_or_create_preferences
-from .recipe_generation import generate_recipes
-from .recipe_models import MealPlanItem
-from .shopping_list import (
+from meal_planning_agent.agent.llm_models import DEFAULT_MODEL
+from meal_planning_agent.agent.meal_pairing import MealPairing
+from meal_planning_agent.agent.recipe_generation import generate_recipes
+from meal_planning_agent.agent.recipe_models import MealPlanItem
+from meal_planning_agent.agent.shopping_list import (
     generate_ingredients_markdown,
     get_consolidated_ingredients,
     sort_ingredients,
 )
-from .utils import BASE_SYSTEM_INSTRUCTIONS
+from meal_planning_agent.auth import UserMetadata
+from meal_planning_agent.preferences_store import get_or_create_preferences
+from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS
 
 
 class MealPlan(BaseModel):

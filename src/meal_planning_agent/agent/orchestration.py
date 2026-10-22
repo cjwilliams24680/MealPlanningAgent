@@ -1,18 +1,25 @@
 from agents import Agent
 from pydantic import BaseModel, Field
 
-from .llm_models import DEFAULT_MODEL
-from .meal_brainstorm_generation import generate_meal_idea_with_ingredients
-from .meal_models import PreparedDish
-from .meal_pairing import (
+from meal_planning_agent.agent.llm_models import DEFAULT_MODEL
+from meal_planning_agent.agent.meal_brainstorm_generation import (
+    generate_meal_idea_with_ingredients,
+)
+from meal_planning_agent.agent.meal_models import PreparedDish
+from meal_planning_agent.agent.meal_pairing import (
     MealPairing,
     generate_initial_meal_ideas_for_meal_plan,
     generate_meal_idea_replacements,
 )
-from .meal_plan_writeup import generate_meal_plan
-from .preferences_store import get_user_preferences_tool, set_user_preferences
-from .push import send_push_notification
-from .single_dish_writeup import generate_writeup_for_single_dish
+from meal_planning_agent.agent.meal_plan_writeup import generate_meal_plan
+from meal_planning_agent.agent.single_dish_writeup import (
+    generate_writeup_for_single_dish,
+)
+from meal_planning_agent.preferences_store import (
+    get_user_preferences_tool,
+    set_user_preferences,
+)
+from meal_planning_agent.push import send_push_notification
 
 _REVIEW_USER_PREFERENCES_INSTRUCTIONS = """
 You run a business that helps people plan their meals.

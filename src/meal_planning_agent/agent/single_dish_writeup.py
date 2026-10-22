@@ -1,12 +1,15 @@
 from agents import RunContextWrapper, function_tool
 from pydantic import BaseModel, Field
 
-from .auth import UserMetadata
-from .meal_models import PreparedDish
-from .preferences_store import get_or_create_preferences
-from .recipe_generation import generate_recipe
-from .recipe_models import Recipe
-from .shopping_list import generate_ingredients_markdown, sort_ingredients
+from meal_planning_agent.agent.meal_models import PreparedDish
+from meal_planning_agent.agent.recipe_generation import generate_recipe
+from meal_planning_agent.agent.recipe_models import Recipe
+from meal_planning_agent.agent.shopping_list import (
+    generate_ingredients_markdown,
+    sort_ingredients,
+)
+from meal_planning_agent.auth import UserMetadata
+from meal_planning_agent.preferences_store import get_or_create_preferences
 
 
 class SingleDishWriteup(BaseModel):

@@ -1,4 +1,8 @@
-from .recipe_models import GROCERY_DEPARTMENTS, Ingredient, MealPlanItem
+from meal_planning_agent.agent.recipe_models import (
+    GROCERY_DEPARTMENTS,
+    Ingredient,
+    MealPlanItem,
+)
 
 
 def get_consolidated_ingredients(meal_plan: list[MealPlanItem]) -> list[Ingredient]:

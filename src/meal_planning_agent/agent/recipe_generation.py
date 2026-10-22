@@ -2,13 +2,16 @@ import asyncio
 
 from agents import Agent, Runner
 
-from .llm_models import BALANCED_MODEL
-from .meal_models import PreparedDish
-from .meal_pairing import MealPairing
-from .preferences.models import UserPreferencesBase
-from .recipe_models import MealPlanItem, Recipe
-from .recipe_validation import adjust_for_servings_count_if_necessary, validate_recipe
-from .utils import BASE_SYSTEM_INSTRUCTIONS
+from meal_planning_agent.agent.llm_models import BALANCED_MODEL
+from meal_planning_agent.agent.meal_models import PreparedDish
+from meal_planning_agent.agent.meal_pairing import MealPairing
+from meal_planning_agent.agent.recipe_models import MealPlanItem, Recipe
+from meal_planning_agent.agent.recipe_validation import (
+    adjust_for_servings_count_if_necessary,
+    validate_recipe,
+)
+from meal_planning_agent.preferences.models import UserPreferencesBase
+from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS
 
 _RECIPE_GENERATION_AGENT = Agent(
     name="Recipe Generation Agent",

@@ -1,7 +1,7 @@
 import requests
 from agents import function_tool
 
-from .utils import assert_key_exists
+from meal_planning_agent.utils import assert_key_exists
 
 _PUSHOVER_USER = assert_key_exists("PUSHOVER_USER")
 _PUSHOVER_TOKEN = assert_key_exists("PUSHOVER_TOKEN")

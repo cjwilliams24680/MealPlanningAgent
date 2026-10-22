@@ -6,12 +6,12 @@ from fastapi import Body, Cookie, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from meal_planning_agent.agent.orchestration import ORCHESTRATION_AGENT
 from meal_planning_agent.auth import UserMetadata, create_session
 from meal_planning_agent.chat_history_store import (
     create_conversation,
     get_or_create_history,
 )
-from meal_planning_agent.orchestration import ORCHESTRATION_AGENT
 from meal_planning_agent.users_database import create_db_and_tables
 
 

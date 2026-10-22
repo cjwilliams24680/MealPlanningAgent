@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from pydantic import BaseModel, Field
 
-from .meal_models import PreparedDish
+from meal_planning_agent.agent.meal_models import PreparedDish
 
 GROCERY_DEPARTMENTS = [
     "Produce",

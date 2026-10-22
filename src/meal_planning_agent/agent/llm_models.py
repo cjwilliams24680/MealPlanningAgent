@@ -3,7 +3,7 @@ import random
 from agents import OpenAIChatCompletionsModel
 from openai import AsyncOpenAI
 
-from .utils import assert_key_exists
+from meal_planning_agent.utils import assert_key_exists
 
 HIGH_EFFORT_MODEL = "gpt-5.6-sol"
 BALANCED_MODEL = "gpt-5.6-terra"

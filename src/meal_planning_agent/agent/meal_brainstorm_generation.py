@@ -2,14 +2,14 @@ import asyncio
 
 from agents import Agent, RunContextWrapper, Runner, function_tool
 
-from .auth import UserMetadata
-from .llm_models import get_random_model
-from .meal_brainstorm_validation import filter_meal_ideas
-from .meal_models import MealPlanIdeas, PreparedDish
-from .preferences.models import UserPreferencesBase
-from .preferences_store import get_or_create_preferences
-from .seasonal_report import get_seasonal_report
-from .utils import BASE_SYSTEM_INSTRUCTIONS, clamp
+from meal_planning_agent.agent.llm_models import get_random_model
+from meal_planning_agent.agent.meal_brainstorm_validation import filter_meal_ideas
+from meal_planning_agent.agent.meal_models import MealPlanIdeas, PreparedDish
+from meal_planning_agent.agent.seasonal_report import get_seasonal_report
+from meal_planning_agent.auth import UserMetadata
+from meal_planning_agent.preferences.models import UserPreferencesBase
+from meal_planning_agent.preferences_store import get_or_create_preferences
+from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS, clamp
 
 _BRAINSTORM_INSTRUCTIONS = f"""
 {BASE_SYSTEM_INSTRUCTIONS}
