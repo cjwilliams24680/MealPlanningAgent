@@ -15,11 +15,11 @@ from meal_planning_agent.agent.meal_plan_writeup import generate_meal_plan
 from meal_planning_agent.agent.single_dish_writeup import (
     generate_writeup_for_single_dish,
 )
-from meal_planning_agent.preferences_store import (
+from meal_planning_agent.agent.tools import (
     get_user_preferences_tool,
+    send_push_notification,
     set_user_preferences,
 )
-from meal_planning_agent.push import send_push_notification
 
 _REVIEW_USER_PREFERENCES_INSTRUCTIONS = """
 You run a business that helps people plan their meals.

@@ -1,6 +1,3 @@
-from agents import RunContextWrapper, function_tool
-
-from meal_planning_agent.auth import UserMetadata
 from meal_planning_agent.preferences.models import UserPreferencesBase
 from meal_planning_agent.utils import clamp
 
@@ -41,20 +38,3 @@ def _sanitize_user_preferences(raw: UserPreferencesBase) -> UserPreferencesBase:
             ),
         }
     )
-
-
-@function_tool
-async def set_user_preferences(
-    wrapper: RunContextWrapper[UserMetadata],
-    update: UserPreferencesBase,
-):
-    """Sets the user's saved preferences."""
-    upsert_preferences(wrapper.context.session_id, _sanitize_user_preferences(update))
-
-
-@function_tool
-async def get_user_preferences_tool(
-    wrapper: RunContextWrapper[UserMetadata],
-) -> UserPreferencesBase:
-    """Returns the user's saved preferences."""
-    return get_or_create_preferences(wrapper.context.session_id)
