@@ -1,6 +1,6 @@
 import uuid
 
-from sqlmodel import col, select
+from sqlmodel import col, false, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 import meal_planning_agent.users.service as UserService
@@ -20,6 +20,15 @@ async def create_anonymous_session() -> AuthSession:
         await session.commit()
         await session.refresh(auth_session)
         return auth_session
+
+
+async def is_valid(session_token: str) -> bool:
+    if not session_token:
+        return false
+
+    with AsyncSession(ENGINE) as db_session:
+        session = await _get_session(session=db_session, session_token=session_token)
+        return session is not None
 
 
 async def get_user(session_token: str) -> User | None:

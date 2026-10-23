@@ -6,10 +6,11 @@ from fastapi import Body, Cookie, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+import meal_planning_agent.authentication.service as AuthService
+import meal_planning_agent.conversations.service as ConversationsService
 from meal_planning_agent.agent.orchestration import ORCHESTRATION_AGENT
-from meal_planning_agent.auth import UserMetadata, create_session
+from meal_planning_agent.agent_context import AgentContext
 from meal_planning_agent.chat_history_store import (
-    create_conversation,
     get_or_create_history,
 )
 from meal_planning_agent.users_database import create_db_and_tables
@@ -41,7 +42,7 @@ app.add_middleware(
 
 
 class AppCookies(BaseModel):
-    session_id: str | None = None
+    session_token: str | None = None
     conversation_id: str | None = None
 
 
@@ -64,12 +65,18 @@ async def initialize(
     cookies: Annotated[AppCookies, Cookie()],
     response: Response,
 ):
-    session_id = cookies.session_id
-    if not session_id:
-        session_id = create_session()
-    response.set_cookie(key="session_id", value=session_id)
+    session_token = cookies.session_token
+    has_valid_session_token = await AuthService.is_valid(session_token)
 
-    response.set_cookie(key="conversation_id", value=create_conversation())
+    if not has_valid_session_token:
+        session = await AuthService.create_anonymous_session()
+        session_token = session.session_token
+
+    user = await AuthService.get_user(session_token=session_token)
+    conversation = await ConversationsService.create_conversation(user.id)
+
+    response.set_cookie(key="session_token", value=session_token)
+    response.set_cookie(key="conversation_id", value=conversation.id)
 
     return {"message": "Cookies updated successfully"}
 
@@ -79,7 +86,7 @@ async def send_message(
     cookies: Annotated[AppCookies, Cookie()],
     body: Annotated[SendMessageRequest, Body()],
 ):
-    if not cookies.session_id:
+    if not cookies.session_token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Session not specified"
         )
@@ -92,6 +99,12 @@ async def send_message(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Message is not provided"
         )
 
+    user = AuthService.get_user(cookies.session_token)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Session"
+        )
+
     session = get_or_create_history(conversation_id=cookies.conversation_id)
 
     with trace("Meal Planning Agent"):
@@ -99,7 +112,7 @@ async def send_message(
             starting_agent=ORCHESTRATION_AGENT,
             input=body.message,
             session=session,
-            context=UserMetadata(session_id=cookies.session_id),
+            context=AgentContext(user_id=user.id),
         )
         return {"response": result.final_output}
 

@@ -10,7 +10,7 @@ from meal_planning_agent.agent.shopping_list import (
     get_consolidated_ingredients,
     sort_ingredients,
 )
-from meal_planning_agent.auth import UserMetadata
+from meal_planning_agent.agent_context import AgentContext
 from meal_planning_agent.preferences_store import get_or_create_preferences
 from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS
 
@@ -51,7 +51,7 @@ def _write_shopping_list(meals: list[MealPlanItem]) -> str:
 
 @function_tool(output_type=MealPlan)
 async def generate_meal_plan(
-    wrapper: RunContextWrapper[UserMetadata],
+    wrapper: RunContextWrapper[AgentContext],
     meal_pairings: list[MealPairing],
 ) -> MealPlan:
     """
@@ -63,7 +63,7 @@ async def generate_meal_plan(
         A meal plan with a shopping list.
     """
     meal_plan_items = await generate_recipes(
-        meal_pairings, get_or_create_preferences(wrapper.context.session_id)
+        meal_pairings, get_or_create_preferences(wrapper.context.user_id)
     )
     meal_plan = MealPlan(
         plan_markdown=await _write_meal_plan(meals=meal_plan_items),

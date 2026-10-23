@@ -8,7 +8,7 @@ from meal_planning_agent.agent.meal_brainstorm_generation import (
     create_meal_plan_brainstorm,
 )
 from meal_planning_agent.agent.meal_models import MealPlanIdeas, PreparedDish
-from meal_planning_agent.auth import UserMetadata
+from meal_planning_agent.agent_context import AgentContext
 from meal_planning_agent.preferences.models import UserPreferencesBase
 from meal_planning_agent.preferences_store import get_or_create_preferences
 from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS, clamp, to_markdown_list
@@ -158,7 +158,7 @@ async def _generate_meal_pairings(
 
 @function_tool(output_type=MealPairingsResult)
 async def generate_initial_meal_ideas_for_meal_plan(
-    wrapper: RunContextWrapper[UserMetadata],
+    wrapper: RunContextWrapper[AgentContext],
 ) -> MealPairingsResult:
     """
     Generates the number of meal pairings for the user's meal plan based on the
@@ -167,7 +167,7 @@ async def generate_initial_meal_ideas_for_meal_plan(
     Returns:
         A list of meal pairings for the user to review.
     """
-    user_preferences = get_or_create_preferences(wrapper.context.session_id)
+    user_preferences = get_or_create_preferences(wrapper.context.user_id)
     meal_pairings = await _generate_meal_pairings(
         number_of_meals=user_preferences.number_of_meals_per_meal_plan,
         user_preferences=user_preferences,
@@ -177,7 +177,7 @@ async def generate_initial_meal_ideas_for_meal_plan(
 
 @function_tool(output_type=MealPairingsResult)
 async def generate_meal_idea_replacements(
-    wrapper: RunContextWrapper[UserMetadata],
+    wrapper: RunContextWrapper[AgentContext],
     number_of_meals_to_replace: int,
     previous_meal_ideas: list[str],
 ) -> MealPairingsResult:
@@ -193,6 +193,6 @@ async def generate_meal_idea_replacements(
     meal_pairings = await _generate_meal_pairings(
         number_of_meals=number_of_meals_to_replace,
         meals_to_avoid=previous_meal_ideas,
-        user_preferences=get_or_create_preferences(wrapper.context.session_id),
+        user_preferences=get_or_create_preferences(wrapper.context.user_id),
     )
     return MealPairingsResult(meal_pairings=meal_pairings)

@@ -2,29 +2,29 @@ from meal_planning_agent.preferences.models import UserPreferencesBase
 from meal_planning_agent.utils import clamp
 
 # Iterative solution until I add databases
-_preferences_store: dict[str, UserPreferencesBase] = {}
+_preferences_store: dict[int, UserPreferencesBase] = {}
 
 
-async def get_or_create_preferences(session_id: str) -> UserPreferencesBase:
-    if not session_id:
-        raise ValueError("No session id was passed")
+async def get_or_create_preferences(user_id: int) -> UserPreferencesBase:
+    if not user_id:
+        raise ValueError("No user id was passed")
 
-    history = _preferences_store.get(session_id)
+    history = _preferences_store.get(user_id)
     if history is None:
         history = UserPreferencesBase()
-        upsert_preferences(session_id, history)
+        upsert_preferences(user_id, history)
 
     return history
 
 
 async def upsert_preferences(
-    session_id: str,
+    user_id: int,
     preferences: UserPreferencesBase,
 ):
-    if not session_id:
-        raise ValueError("No session id was passed")
+    if not user_id:
+        raise ValueError("No user id was passed")
 
-    _preferences_store[session_id] = preferences
+    _preferences_store[user_id] = preferences
 
 
 def _sanitize_user_preferences(raw: UserPreferencesBase) -> UserPreferencesBase:

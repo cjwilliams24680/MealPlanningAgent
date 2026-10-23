@@ -8,7 +8,7 @@ from meal_planning_agent.agent.shopping_list import (
     generate_ingredients_markdown,
     sort_ingredients,
 )
-from meal_planning_agent.auth import UserMetadata
+from meal_planning_agent.agent_context import AgentContext
 from meal_planning_agent.preferences_store import get_or_create_preferences
 
 
@@ -28,7 +28,7 @@ def _write_shopping_list(recipe: Recipe) -> str:
 
 @function_tool(output_type=SingleDishWriteup)
 async def generate_writeup_for_single_dish(
-    wrapper: RunContextWrapper[UserMetadata],
+    wrapper: RunContextWrapper[AgentContext],
     requested_dish: PreparedDish,
 ) -> SingleDishWriteup:
     """
@@ -40,7 +40,7 @@ async def generate_writeup_for_single_dish(
         A SingleDishWriteup object containing the recipe_markdown and shopping_list_markdown for the requested dish.
     """
     recipe = await generate_recipe(
-        requested_dish, get_or_create_preferences(wrapper.context.session_id)
+        requested_dish, get_or_create_preferences(wrapper.context.user_id)
     )
     writeup = SingleDishWriteup(
         recipe_markdown=recipe.cooking_instructions,
