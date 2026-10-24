@@ -15,12 +15,13 @@ class UserPreferencesBase(SQLModel):
         le=100,
     )
     dietary_restrictions: str = Field(
-        description="""A list of any dietary restrictions the user has that need to be considered for the meal plan.
+        default="",
+        description="""All dietary restrictions the user has that need to be considered for the meal plan.
 Examples: Gluten-free, vegetarian, dairy-free""",
     )
-    likes: str = Field(description="A list of foods user's favorite foods.")
+    likes: str = Field(default="", description="User's favorite foods.")
     dislikes: str = Field(
-        default="", description="A list of foods that the user does not like."
+        default="", description="All of the foods that the user does not like."
     )
     nutritional_goals: str = Field(
         default="",

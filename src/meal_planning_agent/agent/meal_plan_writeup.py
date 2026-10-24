@@ -1,6 +1,7 @@
 from agents import Agent, RunContextWrapper, Runner, function_tool
 from pydantic import BaseModel, Field
 
+import meal_planning_agent.preferences.service as PreferencesService
 from meal_planning_agent.agent.llm_models import DEFAULT_MODEL
 from meal_planning_agent.agent.meal_pairing import MealPairing
 from meal_planning_agent.agent.recipe_generation import generate_recipes
@@ -11,7 +12,6 @@ from meal_planning_agent.agent.shopping_list import (
     sort_ingredients,
 )
 from meal_planning_agent.agent_context import AgentContext
-from meal_planning_agent.preferences_store import get_or_create_preferences
 from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS
 
 
@@ -62,8 +62,11 @@ async def generate_meal_plan(
     Returns:
         A meal plan with a shopping list.
     """
+    preferences = await PreferencesService.get_or_create_preferences(
+        wrapper.context.user_id
+    )
     meal_plan_items = await generate_recipes(
-        meal_pairings, get_or_create_preferences(wrapper.context.user_id)
+        meals=meal_pairings, user_preferences=preferences
     )
     meal_plan = MealPlan(
         plan_markdown=await _write_meal_plan(meals=meal_plan_items),

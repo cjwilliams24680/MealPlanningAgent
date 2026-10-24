@@ -9,7 +9,7 @@ from meal_planning_agent.conversations.models import Conversation
 _conversation_db: dict[str, Conversation] = {}
 
 
-def create_conversation(user_id: str) -> str:
+async def create_conversation(user_id: str) -> Conversation:
     conversation_id = str(uuid.uuid4())
     conversation = Conversation(
         id=conversation_id,
@@ -20,7 +20,7 @@ def create_conversation(user_id: str) -> str:
     return conversation
 
 
-def get_conversation(conversation_id: str, user_id: str) -> Conversation | None:
+async def get_conversation(conversation_id: str, user_id: str) -> Conversation | None:
     if not conversation_id:
         raise ValueError("No conversation id was passed")
 
@@ -31,7 +31,7 @@ def get_conversation(conversation_id: str, user_id: str) -> Conversation | None:
     return conversation
 
 
-def update_history(
+async def update_history(
     user_id: str,
     conversation_id: str,
     history: SQLiteSession,

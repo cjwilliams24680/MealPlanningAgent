@@ -3,6 +3,7 @@ import random
 from agents import Agent, RunContextWrapper, Runner, function_tool
 from pydantic import BaseModel, Field
 
+import meal_planning_agent.preferences.service as PreferencesService
 from meal_planning_agent.agent.llm_models import DEFAULT_MODEL, GEMINI_MODEL
 from meal_planning_agent.agent.meal_brainstorm_generation import (
     create_meal_plan_brainstorm,
@@ -10,7 +11,6 @@ from meal_planning_agent.agent.meal_brainstorm_generation import (
 from meal_planning_agent.agent.meal_models import MealPlanIdeas, PreparedDish
 from meal_planning_agent.agent_context import AgentContext
 from meal_planning_agent.preferences.models import UserPreferencesBase
-from meal_planning_agent.preferences_store import get_or_create_preferences
 from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS, clamp, to_markdown_list
 
 
@@ -167,7 +167,10 @@ async def generate_initial_meal_ideas_for_meal_plan(
     Returns:
         A list of meal pairings for the user to review.
     """
-    user_preferences = get_or_create_preferences(wrapper.context.user_id)
+    user_preferences = await PreferencesService.get_or_create_preferences(
+        user_id=wrapper.context.user_id
+    )
+    print(f"preferences: {user_preferences}")
     meal_pairings = await _generate_meal_pairings(
         number_of_meals=user_preferences.number_of_meals_per_meal_plan,
         user_preferences=user_preferences,
@@ -190,9 +193,12 @@ async def generate_meal_idea_replacements(
     Returns:
         A list of meal pairings for the user to review
     """
+    preferences = await PreferencesService.get_or_create_preferences(
+        wrapper.context.user_id
+    )
     meal_pairings = await _generate_meal_pairings(
         number_of_meals=number_of_meals_to_replace,
         meals_to_avoid=previous_meal_ideas,
-        user_preferences=get_or_create_preferences(wrapper.context.user_id),
+        user_preferences=preferences,
     )
     return MealPairingsResult(meal_pairings=meal_pairings)

@@ -2,13 +2,13 @@ import asyncio
 
 from agents import Agent, RunContextWrapper, Runner, function_tool
 
+import meal_planning_agent.preferences.service as PreferencesService
 from meal_planning_agent.agent.llm_models import get_random_model
 from meal_planning_agent.agent.meal_brainstorm_validation import filter_meal_ideas
 from meal_planning_agent.agent.meal_models import MealPlanIdeas, PreparedDish
 from meal_planning_agent.agent.seasonal_report import get_seasonal_report
 from meal_planning_agent.agent_context import AgentContext
 from meal_planning_agent.preferences.models import UserPreferencesBase
-from meal_planning_agent.preferences_store import get_or_create_preferences
 from meal_planning_agent.utils import BASE_SYSTEM_INSTRUCTIONS, clamp
 
 _BRAINSTORM_INSTRUCTIONS = f"""
@@ -104,7 +104,9 @@ async def generate_meal_idea_with_ingredients(
 Here is the list of ingredients:
 {ingredients}
 """
-    user_preferences = get_or_create_preferences(context.context.user_id)
+    user_preferences = await PreferencesService.get_or_create_preferences(
+        context.context.user_id
+    )
     dish_ideas = await _generate_dish_ideas(
         number_of_dishes=1,
         dish_type="foods",

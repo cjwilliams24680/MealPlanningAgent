@@ -10,9 +10,6 @@ import meal_planning_agent.authentication.service as AuthService
 import meal_planning_agent.conversations.service as ConversationsService
 from meal_planning_agent.agent.orchestration import ORCHESTRATION_AGENT
 from meal_planning_agent.agent_context import AgentContext
-from meal_planning_agent.chat_history_store import (
-    get_or_create_history,
-)
 from meal_planning_agent.users_database import create_db_and_tables
 
 
@@ -30,6 +27,7 @@ app = FastAPI(
         "name": "Chris Williams",
         "url": "https://github.com/cjwilliams24680/meal-planning-agent",
     },
+    lifespan=lifespan,
 )
 # TODO make this restrictive in production
 app.add_middleware(
@@ -99,19 +97,28 @@ async def send_message(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Message is not provided"
         )
 
-    user = AuthService.get_user(cookies.session_token)
+    user = await AuthService.get_user(cookies.session_token)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Session"
         )
 
-    session = get_or_create_history(conversation_id=cookies.conversation_id)
+    conversation = await ConversationsService.get_conversation(
+        conversation_id=cookies.conversation_id,
+        user_id=user.id,
+    )
+
+    if not conversation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Conversation not found for user",
+        )
 
     with trace("Meal Planning Agent"):
         result = await Runner.run(
             starting_agent=ORCHESTRATION_AGENT,
             input=body.message,
-            session=session,
+            session=conversation.history,
             context=AgentContext(user_id=user.id),
         )
         return {"response": result.final_output}
