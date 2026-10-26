@@ -1,10 +1,9 @@
-from dataclasses import dataclass
-
-from agents import SQLiteSession
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
 class Conversation:
     id: str
     user_id: str
-    history: SQLiteSession
+    history: list[Any] = field(default_factory=list)

@@ -115,11 +115,21 @@ async def send_message(
         )
 
     with trace("Meal Planning Agent"):
+        # Generate LLM Response
+        trimmed_conversation_history = conversation.history[-100:]
+        input = trimmed_conversation_history + [
+            {"role": "user", "content": body.message}
+        ]
         result = await Runner.run(
             starting_agent=ORCHESTRATION_AGENT,
-            input=body.message,
-            session=conversation.history,
+            input=input,
             context=AgentContext(user_id=user.id),
+        )
+
+        await ConversationsService.update_history(
+            user_id=conversation.user_id,
+            conversation_id=conversation.id,
+            history=result.to_input_list(),
         )
         return {"response": result.final_output}
 
