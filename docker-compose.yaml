@@ -28,7 +28,7 @@ services:
     ports:
       - mode: ingress
         protocol: tcp
-        published: 8080 # this is the public facing port
+        published: 8000 # this is the public facing port
         target: 8000 # this is the port that the application listens on. docker maps it to the published port
   conversations-db:
     hostname: conversations-db
