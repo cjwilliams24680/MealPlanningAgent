@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aioboto3>=15.5.0",
     "fastapi[standard]>=0.140.7",
     "openai-agents>=0.19.0",
     "psycopg[binary]>=3.3.6",

@@ -8,14 +8,16 @@ from pydantic import BaseModel
 
 import meal_planning_agent.authentication.service as AuthService
 import meal_planning_agent.conversations.service as ConversationsService
+import meal_planning_agent.conversations_database as ConversationsDatabase
+import meal_planning_agent.users_database as UsersDatabase
 from meal_planning_agent.agent.orchestration import ORCHESTRATION_AGENT
 from meal_planning_agent.agent_context import AgentContext
-from meal_planning_agent.users_database import create_db_and_tables
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await create_db_and_tables()
+    await UsersDatabase.create_db_and_tables()
+    await ConversationsDatabase.create_db_and_tables()
     yield
 
 

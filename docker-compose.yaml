@@ -22,9 +22,11 @@ services:
       - PUSHOVER_TOKEN=${PUSHOVER_TOKEN}
       - CONVERSATIONS_DB_ENDPOINT=conversations-db:8000
       - CONVERSATIONS_DB_NAME=conversations
-      - CONVERSATIONS_DB_USERNAME=conversations_user
+      - CONVERSATIONS_DB_USERNAME=conversationsuser
       - CONVERSATIONS_DB_PASSWORD=${DB_PASSWORD}
       - USERS_DB_URL=users_user:${DB_PASSWORD}@users-db:5432/users
+      - DEBUG=${DEBUG}
+      - AWS_REGION=${AWS_REGION}
     ports:
       - mode: ingress
         protocol: tcp
@@ -40,7 +42,6 @@ services:
         - CMD-SHELL
         - exit 0
       timeout: 15s
-    read_only: true
     restart: always
     ports: []
   users-db:
